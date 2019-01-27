@@ -1,0 +1,463 @@
+
+    menuItem
+        -label "gridToggle" 
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "int $tggl = `grid -q -tgl`;\nif ($tggl==0){\n    grid -tgl 1;\n    }\nelse {\n    grid -tgl 0;\n}" 
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -radialPosition "NE" 
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 1
+        -sourceType "mel" 
+        -longDivider 1
+        menuEditorMenuItem2;
+
+    menuItem
+        -label "menuEditorMenuItem3" 
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "GridOptions;\nperformGridOptions 1;" 
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 1
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 0
+        -echoCommand 0
+        -italicized 0
+        -boldFont 1
+        -sourceType "mel" 
+        -longDivider 1
+        menuEditorMenuItem3;
+
+    menuItem
+        -label "selHighlighting" 
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "string $mp = `getPanel -wf`;\nmodelEditor -e -sel (!`modelEditor -q -sel $mp`) $mp;\n" 
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -radialPosition "S" 
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 1
+        -sourceType "mel" 
+        -longDivider 1
+        menuEditorMenuItem6;
+
+    menuItem
+        -label "wireframe" 
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "string $selectedPanel = `getPanel -wf`;\nint $shadedWireState = `modelEditor -q -wos $selectedPanel`;\nif(`modelEditor -ex $selectedPanel`)\n{\n  setWireframeOnShadedOption (!$shadedWireState) $selectedPanel;\n}" 
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -radialPosition "N" 
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 1
+        -sourceType "mel" 
+        -longDivider 1
+        menuEditorMenuItem5;
+
+    menuItem
+        -label "dualToggle" 
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "proc jc_dualToggle(){\n\t//turn off selection highlighting\n\tstring $mp = `getPanel -wf`;\n\tmodelEditor -e -sel 0 $mp;\n\n\n\t$select = `ls -sl`;\n\t$firstObj = $select[0];\n\t$secondObj = $select[1];\n\t$firstVis = getAttr($firstObj + \".visibility\");\n\t$secondVis = getAttr($secondObj + \".visibility\");\n\n\tif ($firstVis && $secondVis){\n    \t\tsetAttr ($secondObj + \".visibility\") 0;\n\t}\n\tif ($firstVis && !($secondVis)){\n    \t\tsetAttr ($firstObj + \".visibility\") 0;\n    \t\tsetAttr ($secondObj + \".visibility\") 1;\n\t}\n\telse{\n    \t\tsetAttr ($secondObj + \".visibility\") 0;\n    \t\tsetAttr ($firstObj + \".visibility\") 1;\n    }\n}\n\njc_dualToggle();" 
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -radialPosition "E" 
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 1
+        -sourceType "mel" 
+        -longDivider 1
+        menuEditorMenuItem13;
+
+    menuItem
+        -label "cycleCam" 
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "CycleThroughCameras;" 
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -radialPosition "W" 
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 1
+        -sourceType "mel" 
+        -longDivider 1
+        menuEditorMenuItem8;
+
+    menuItem
+        -label "selectCam" 
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "global proc string getCurrentCamera()\n{\n  string $camera;\n\n  // First get the panel that currently has focus\n  string $panel = `getPanel -wf`;\n\n  // Compare the panel's type to confirm it is a \"modelPanel\"\n  if ( \"modelPanel\" == `getPanel -to $panel` )\n  {\n  // Get the name of the camera using the ?modelEditor? command\n  $camera = `modelEditor -q -camera $panel`;\n  }\n  if($camera == \"\")\n  return \"\";\n  if(`nodeType $camera` == \"camera\")\n  {\n  string $rels[] = `listRelatives -p $camera`;\n  $camera = $rels[0];\n  }\n  return $camera;\n}\n$selection = getCurrentCamera();\nselect $selection;" 
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 1
+        -sourceType "mel" 
+        -longDivider 1
+        menuEditorMenuItem4;
+
+    menuItem
+        -label "separator" 
+        -divider 1
+        -dividerLabel "separator" 
+        -subMenu 0
+        -tearOff 0
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -italicized 0
+        -boldFont 0
+        -sourceType "mel" 
+        -longDivider 1
+        menuEditorMenuItem14;
+
+    menuItem
+        -label "tumble" 
+        -divider 0
+        -subMenu 1
+        -tearOff 0
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -enableCommandRepeat 1
+        -italicized 0
+        -boldFont 1
+        -sourceType "mel" 
+        -longDivider 1
+        menuEditorMenuItem7;
+
+        menuItem
+            -label "tumble normal" 
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -command "tumbleCtx -e -tumbleScale 1 tumbleContext;\ntrackCtx -e -trackScale 1 trackContext;\nboxZoomCtx -e -zs 1 boxZoomContext;\ndollyCtx -e -scale 1 dollyContext;" 
+            -altModifier 0
+            -optionModifier 0
+            -commandModifier 0
+            -ctrlModifier 0
+            -shiftModifier 0
+            -optionBox 0
+            -enable 1
+            -data 0
+            -radialPosition "NE" 
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 1
+            -echoCommand 0
+            -italicized 0
+            -boldFont 1
+            -sourceType "mel" 
+            -longDivider 1
+            menuEditorMenuItem1;
+
+        menuItem
+            -label "tumble soft" 
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -command "tumbleCtx -e -tumbleScale 0.01 tumbleContext;\ntrackCtx -e -trackScale 0.01 trackContext;\nboxZoomCtx -e -zs 0.01 boxZoomContext;\ndollyCtx -e -scale 0.01 dollyContext;" 
+            -altModifier 0
+            -optionModifier 0
+            -commandModifier 0
+            -ctrlModifier 0
+            -shiftModifier 0
+            -optionBox 0
+            -enable 1
+            -data 0
+            -radialPosition "SW" 
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 1
+            -echoCommand 0
+            -italicized 0
+            -boldFont 1
+            -sourceType "mel" 
+            -longDivider 1
+            menuEditorMenuItem2;
+
+        menuItem
+            -label "tumble mid" 
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -command "tumbleCtx -e -tumbleScale 0.1 tumbleContext;\ntrackCtx -e -trackScale 0.1 trackContext;\nboxZoomCtx -e -zs 0.1 boxZoomContext;\ndollyCtx -e -scale 0.1 dollyContext;" 
+            -altModifier 0
+            -optionModifier 0
+            -commandModifier 0
+            -ctrlModifier 0
+            -shiftModifier 0
+            -optionBox 0
+            -enable 1
+            -data 0
+            -radialPosition "NW" 
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 1
+            -echoCommand 0
+            -italicized 0
+            -boldFont 1
+            -sourceType "mel" 
+            -longDivider 1
+            menuEditorMenuItem3;
+
+    setParent -m ..;
+
+    menuItem
+        -label "Layers" 
+        -divider 0
+        -subMenu 1
+        -tearOff 0
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -enableCommandRepeat 1
+        -italicized 0
+        -boldFont 1
+        -sourceType "mel" 
+        -longDivider 1
+        menuEditorMenuItem12;
+
+        menuItem
+            -label "layerizeVis" 
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -command "global proc jc_createlayers() {\n   string $jc_layerobjs[] = (`ls -sl`);\n   string $tokTmp[]; //temp array to store tokens\n   int $count = `tokenize $jc_layerobjs[0] \"|\" $tokTmp`;\n   string $layername = $tokTmp[$count - 1]; //store final layer name\n   print $layername;\n   createDisplayLayer -name {$layername+\"_lyr\"} -number 1 -nr;\n   for ($jc_obj in $jc_layerobjs) {\n       select $jc_obj;\n       //createDisplayLayer -name {$jc_layerobjs[0]+\"_lyr\"} -number 1 -nr;\n       layerEditorAddObjects ($layername+\"_lyr\");\n   }\n   select $jc_layerobjs;\n   layerEditorLayerButtonVisibilityChange ($layername+\"_lyr\"); //turn off visibility\n}\njc_createlayers();\n" 
+            -altModifier 0
+            -optionModifier 0
+            -commandModifier 0
+            -ctrlModifier 0
+            -shiftModifier 0
+            -optionBox 0
+            -enable 1
+            -data 0
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 1
+            -echoCommand 0
+            -italicized 0
+            -boldFont 1
+            -sourceType "mel" 
+            -longDivider 1
+            menuEditorMenuItem2;
+
+        menuItem
+            -label "layerizeRef" 
+            -divider 0
+            -subMenu 0
+            -tearOff 0
+            -command "global proc jc_createlayers() {\n   string $jc_layerobjs[] = (`ls -sl`);\n   string $tokTmp[]; //temp array to store tokens\n   int $count = `tokenize $jc_layerobjs[0] \"|\" $tokTmp`;\n   string $layername = $tokTmp[$count - 1]; //store final layer name\n   print $layername;\n   createDisplayLayer -name {$layername+\"_lyr\"} -number 1 -nr;\n   for ($jc_obj in $jc_layerobjs) {\n       select $jc_obj;\n       //createDisplayLayer -name {$jc_layerobjs[0]+\"_lyr\"} -number 1 -nr;\n       layerEditorAddObjects ($layername+\"_lyr\");\n   }\n\tSelectNone;\n   //select $jc_layerobjs;\n   //layerEditorLayerButtonVisibilityChange ($layername+\"_lyr\"); //turn off visibility\n   layerEditorLayerButtonTypeChange ($layername+\"_lyr\"); //change state to \"T\"\n   layerEditorLayerButtonTypeChange ($layername+\"_lyr\"); //change state to \"T\"\n}\njc_createlayers();" 
+            -altModifier 0
+            -optionModifier 0
+            -commandModifier 0
+            -ctrlModifier 0
+            -shiftModifier 0
+            -optionBox 0
+            -enable 1
+            -data 0
+            -allowOptionBoxes 1
+            -postMenuCommandOnce 0
+            -enableCommandRepeat 1
+            -echoCommand 0
+            -italicized 0
+            -boldFont 1
+            -sourceType "mel" 
+            -longDivider 1
+            menuEditorMenuItem1;
+
+    setParent -m ..;
+
+    menuItem
+        -label "doubleSided All" 
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "// sets renderstat double sided to 1\\\nstring $transforms[]= `ls -tr`; // selects all transform nodes\nstring $selection[] = `filterExpand -sm 12 $transforms`; //filters out all non-polymesh nodes\nint $size = size($selection);\nprint $size;\nfor ($i=0; $i<$size; ++$i){\n    print ($selection[$i] +\"\\n\");\n    setAttr ($selection[$i]+\".doubleSided\") 1;\n}\n" 
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 1
+        -sourceType "mel" 
+        -longDivider 1
+        menuEditorMenuItem11;
+
+    menuItem
+        -label "defaultMat" 
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "string $mp = `getPanel -wf`;\nmodelEditor -e -udm (!`modelEditor -q -udm $mp`) $mp;\n" 
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 1
+        -sourceType "mel" 
+        -longDivider 1
+        menuEditorMenuItem1;
+
+    menuItem
+        -label "xray" 
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "string $mp = `getPanel -wf`;\nmodelEditor -e -xr (!`modelEditor -q -tsl $mp`) $mp;\n" 
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 1
+        -sourceType "mel" 
+        -longDivider 1
+        menuEditorMenuItem10;
+
+    menuItem
+        -label "twoSidedLit" 
+        -divider 0
+        -subMenu 0
+        -tearOff 0
+        -command "string $mp = `getPanel -wf`;\nmodelEditor -e -tsl (!`modelEditor -q -tsl $mp`) $mp;\n" 
+        -altModifier 0
+        -optionModifier 0
+        -commandModifier 0
+        -ctrlModifier 0
+        -shiftModifier 0
+        -optionBox 0
+        -enable 1
+        -data 0
+        -allowOptionBoxes 1
+        -postMenuCommandOnce 0
+        -enableCommandRepeat 1
+        -echoCommand 0
+        -italicized 0
+        -boldFont 1
+        -sourceType "mel" 
+        -longDivider 1
+        menuEditorMenuItem9;
+
+setParent -m ..;
