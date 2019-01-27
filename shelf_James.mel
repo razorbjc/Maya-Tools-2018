@@ -365,6 +365,38 @@ global proc shelf_James () {
         -manage 1
         -visible 1
         -preventOverride 0
+        -annotation "import maya.cmds as cmds\nimport maya.OpenMaya as OpenMaya\nimport maya.OpenMayaUI as OpenMayaUI\n\nview = OpenMayaUI.M3dView.active3dView()\ncam = OpenMaya.MDagPath()\nview.getCamera(cam)\ncamPath = cam.fullPathName()\ncmds.setAttr(str(camPath+\".nearClipPlane\"),1)\ncmds.setAttr(str(camPath+\".farClipPlane\"),100000)" 
+        -enableBackground 0
+        -highlightColor 0.321569 0.521569 0.65098 
+        -align "center" 
+        -label "import maya.cmds as cmds\nimport maya.OpenMaya as OpenMaya\nimport..." 
+        -labelOffset 0
+        -rotation 0
+        -flipX 0
+        -flipY 0
+        -useAlpha 1
+        -font "plainLabelFont" 
+        -imageOverlayLabel "clipLG" 
+        -overlayLabelColor 0.8 0.8 0.8 
+        -overlayLabelBackColor 0 0 0 0.5 
+        -image "pythonFamily.png" 
+        -image1 "pythonFamily.png" 
+        -style "iconOnly" 
+        -marginWidth 1
+        -marginHeight 1
+        -command "import maya.cmds as cmds\nimport maya.OpenMaya as OpenMaya\nimport maya.OpenMayaUI as OpenMayaUI\n\nview = OpenMayaUI.M3dView.active3dView()\ncam = OpenMaya.MDagPath()\nview.getCamera(cam)\ncamPath = cam.fullPathName()\ncmds.setAttr(str(camPath+\".nearClipPlane\"),1)\ncmds.setAttr(str(camPath+\".farClipPlane\"),100000)" 
+        -sourceType "python" 
+        -commandRepeatable 1
+        -flat 1
+    ;
+    shelfButton
+        -enableCommandRepeat 1
+        -enable 1
+        -width 35
+        -height 35
+        -manage 1
+        -visible 1
+        -preventOverride 0
         -annotation "import maya.cmds as cmds\n\n\ndef jc_imagePlaneToggle():\n    currentCam = cmds.modelPanel(cmds.getPanel(wf=True), q=True, cam=True)\n    currentCamShape = cmds.listRelatives(currentCam,c=True,f=True)\n    imagePlaneTrans = cmds.listConnections(currentCamShape)\n    array = cmds.listRelatives(imagePlaneTrans[0], shapes=True)\n    myImagePlane = array[0]\n\n    if myImagePlane:\n        planeAlphaState = cmds.getAttr(str(myImagePlane) + \".alphaGain\")\n        if planeAlphaState != 0 and planeAlphaState != .5 and planeAlphaState != 1:\n            cmds.setAttr(str(myImagePlane)+\".alphaGain\",0)\n        elif planeAlphaState == 1:\n            cmds.setAttr(str(myImagePlane)+\".alphaGain\",0)\n        elif planeAlphaState == 0:\n            cmds.setAttr(str(myImagePlane)+\".alphaGain\",.5)\n        elif planeAlphaState == .5:\n            cmds.setAttr(str(myImagePlane)+\".alphaGain\",1)\n\n\njc_imagePlaneToggle()" 
         -enableBackground 0
         -highlightColor 0.321569 0.521569 0.65098 
