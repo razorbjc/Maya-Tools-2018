@@ -1,0 +1,6 @@
+import maya.cmds as cmds
+namespacesAll = cmds.namespaceInfo(listOnlyNamespaces=True, recurse=True)
+namespacesAll.remove("UI")
+namespacesAll.remove("shared")
+for i in namespacesAll:
+    cmds.namespace(removeNamespace=i, mergeNamespaceWithRoot=True)
