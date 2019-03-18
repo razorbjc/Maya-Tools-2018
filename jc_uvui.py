@@ -3,17 +3,17 @@ import maya.mel as mel
 import math
 
 
-class uvui(object):
+class jc_uvui(object):
     windowName = "jc_UVUI_window"
 
 
-    def show(self):
+    def launch(self):
         # checks if window is already open, closes and recreates if it is
         if cmds.window(self.windowName, query=True, exists=True):
             cmds.deleteUI(self.windowName)
 
         cmds.window(self.windowName, title="UV UI", minimizeButton=False,
-                    maximizeButton=False, sizeable=True, rtf=True)
+                    maximizeButton=False, sizeable=False, rtf=True)
         self.buildUI()
         cmds.showWindow()
     def buildUI_bw(self):
@@ -94,7 +94,7 @@ class uvui(object):
 
         cmds.rowLayout(numberOfColumns=2, p=columnMain)
         cmds.button(label="Symmetry", width=widthb, command=self.symmetrize)
-        cmds.button(label="Mirror", width=widthb, command=self.distributeU)
+        cmds.button(label="Mirror", width=widthb, command=self.mirror)
 
         cmds.rowLayout(numberOfColumns=2, p=columnMain)
         cmds.button(label="3D Cut", width=widthb, command=self.cutsew3d)
@@ -191,7 +191,7 @@ class uvui(object):
 
         cmds.rowLayout(numberOfColumns=2, p=columnMain)
         cmds.button(label="Symmetry", width=widthb, bgc=yellow, command=self.symmetrize)
-        cmds.button(label="Mirror", width=widthb, bgc=yellow, command=self.distributeU)
+        cmds.button(label="Mirror", width=widthb, bgc=yellow, command=self.mirror)
 
         cmds.rowLayout(numberOfColumns=2, p=columnMain)
         cmds.button(label="3DCutSew", width=widthb, bgc=green, command=self.cutsew3d)
@@ -202,7 +202,7 @@ class uvui(object):
         cmds.rowLayout(numberOfColumns=2, p=columnMain)
         cmds.text(label="Transfer UVs", width=90, align="left")
         cmds.rowLayout(numberOfColumns=2, p=columnMain)
-        cmds.button(label="Topo", width=widthb, bgc=white, command=self.transUVTopoMulti,
+        cmds.button(label="Topo", width=widthb, bgc=white, command=self.transUVTopo,
                     ann="Transfers UVs from the last selected object to the rest of your selected objects")
         cmds.button(label="World", width=widthb, bgc=white, command=self.transUVWorld)
         ### End
@@ -236,7 +236,9 @@ class uvui(object):
         mel.eval('texPivotCycle selection middle;')
 
     def stackShells(self, *args):
+        sel = cmds.ls(sl=True)
         mel.eval('texStackShells {};')
+        cmds.select(sel)
 
     def orientShells(self, *args):
         mel.eval('texOrientShells;')
@@ -283,9 +285,9 @@ class uvui(object):
         width = math.fabs(uminmax[0] - uminmax[1])
         height = math.fabs(vminmax[0] - vminmax[1])
         if (width > height):
-            factor = .985/width
+            factor = .99/width
         else:
-            factor = .985/height
+            factor = .99/height
         cmds.polyEditUV(pivotU=ucenter, pivotV=vcenter, scaleV=factor, scaleU=factor)
         mel.eval('texPivotCycle selection middle;')
 
@@ -293,10 +295,31 @@ class uvui(object):
         mel.eval('SymmetrizeUV;')
 
     def layoutUnfold3d(self, *args):
-        cmds.u3dLayout(res=256, spc=0.015, mar=0.01)
+        scaleOn = cmds.checkBox(self.layoutScaleBox, q=True, value=True)
+        rotateOn = cmds.checkBox(self.layoutRotateBox, q=True, value=True)
+        if scaleOn and rotateOn:
+            print "scale and rotate checked!"
+            cmds.polyMultiLayoutUV(prescale=2, layoutMethod=1, rotateForBestFit=1,
+                               flipReversed=True, percentageSpace=.5, layout=2,
+                               gridU=2, gridV=2, scale=1, sizeU=1,
+                               sizeV=1, offsetU=0, offsetV=0)
+
+        elif scaleOn and not rotateOn:
+            print "scale is checked and rotate is unchecked!"
+            cmds.u3dLayout(res=256, spc=0.005, mar=0.005, scl=1)
+
+        elif rotateOn and not scaleOn:
+            print "scale is unchecked and rotate is checked!"
+            cmds.polyMultiLayoutUV(lm=1, sc=1, rbf=2, fr=1, ps=0.5, l=2, gu=1, gv=1, psc=0, su=1, sv=1, ou=0, ov=0)
+
+        else:
+            print "scale and rotate unchecked!"
+            cmds.u3dLayout(res=256, spc=0.005, mar=0.005)
+
+        # cmds.u3dLayout(res=256, spc=0.015, mar=0.01)
 
     def layoutLegacy(self, *args):
-        cmds.polyMultiLayoutUV(prescale=2, layoutMethod=1, rotateForBestFit=0,
+        cmds.polyMultiLayoutUV(prescale=2, layoutMethod=1, rotateForBestFit=1,
                                flipReversed=True, percentageSpace=.5, layout=2,
                                gridU=2, gridV=2, scale=1, sizeU=1,
                                sizeV=1, offsetU=0, offsetV=0)
@@ -323,24 +346,19 @@ class uvui(object):
         mel.eval('SetCutSewUVTool;')
 
     def transUVTopo(self, *args):
-        cmds.transferAttributes(transferNormals=0, transferUVs=2,
+        selection = cmds.ls(sl=True, o=True)
+        reference = selection[-1]
+        selection.remove(reference)
+        for i in selection:
+            cmds.transferAttributes(reference, i, transferNormals=0, transferUVs=2,
                                 sampleSpace=5, searchMethod=0)
 
-    def transUVTopoMulti(self, *args):
-        sel = cmds.list(sl=True)
-        if len(sel) != 2:
-            raise NameError('Must Select 2 groups!')
-
-        source = sel[0]
-        reference = sel[1]
-        print source
-        print reference
-       # for obj in sel:
-       #      cmds.transferAttributes(ref, obj, transferNormals=0,
-       #                          transferUVs=2, sampleSpace=5)
-
     def transUVWorld(self, *args):
-        cmds.transferAttributes(transferPositions=0, transferNormals=0,
+        selection = cmds.ls(sl=True, o=True)
+        reference = selection[-1]
+        selection.remove(reference)
+        for i in selection:
+            cmds.transferAttributes(reference, i, transferPositions=0, transferNormals=0,
                                 transferUVs=2, sourceUvSpace="map1",
                                 targetUvSpace="map1", sampleSpace=0, searchMethod=0)
 
@@ -355,3 +373,64 @@ class uvui(object):
 
     def autoSeams(self, *args):
         mel.eval('performPolyAutoSeamUV 0;')
+
+    def mirror(self, *args):
+        selection = cmds.ls(sl=True) # starting UVs
+        objs = cmds.ls(sl=True, o=True)
+        mel.eval('polySelectBorderShell 1;')
+        mel.eval('ConvertSelectionToContainedEdges;')
+        shellEdges = cmds.ls(sl=True, flatten=True)
+        print "shellEdges:"
+        print shellEdges
+
+        cmds.select(selection)
+        mel.eval('textureWindow -e -selectRelatedFaces polyTexturePlacementPanel1;')
+        mel.eval('polyListComponentConversion -fv -fe -fuv -tf -tuv;')
+        mel.eval('ConvertSelectionToEdgePerimeter')
+        faceList = cmds.ls(sl=True)
+        targetEdges = cmds.ls(sl=True, flatten=True)
+        print"targetEdges:"
+        print targetEdges
+
+        sewEdges = []
+        for i in targetEdges:
+            sewEdges.append(i)
+        for i in targetEdges:
+            if i in shellEdges:
+                print "removing %s" % i
+                sewEdges.remove(i)
+        print "sewEdges:"
+        print sewEdges
+
+        cmds.select(selection)
+        mel.eval('textureWindow -e -selectRelatedFaces polyTexturePlacementPanel1;')
+        mel.eval('polyListComponentConversion -fv -fe -fuv -tf -tuv;')
+        cmds.transferAttributes(transferPositions=1, transferNormals=0, transferUVs=2, transferColors= 0, sampleSpace= 0, searchMethod= 3,searchScaleX =-1.0, flipUVs= 1, colorBorders=1)
+
+        for i in sewEdges:
+             cmds.polyMapSew(i)
+        cmds.select(cmds.ls(sl=True, o=True))
+        mel.eval('DeleteHistory;')
+        cmds.select(objs)
+
+
+    def mirrorUV(self, *args):
+        faceListBefore = self.getFaceList()
+        oldLoc = self.getFaceLoc()
+        cmds.ConvertSelectionToFaces()
+
+        cmds.transferAttributes(transferPositions=0,transferNormals=0, transferUVs=2, transferColors= 0, sampleSpace= 0, searchMethod= 3,searchScaleX =-1.0, flipUVs= 1, colorBorders=1)
+
+        faceListAfter = self.getFaceList()
+
+        newLoc = self.getFaceLoc()
+
+        cmds.ConvertSelectionToFaces()
+        difPosU = oldLoc[0]- newLoc[0]
+        difPosV = oldLoc[1]- newLoc[1]
+        cmds.select(faceListAfter,r=True)
+        cmds.polyEditUV(u=difPosU , v=difPosV)
+        mesh = cmds.ls(sl=True,o=True)
+
+        cmds.delete(mesh,ch=True)
+
