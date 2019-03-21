@@ -5,28 +5,30 @@
 import maya.cmds as cmds
 import maya.mel as mel
 def jc_faceCut():
-    
-	# collect selected edges and obj name
-	edgeSel = cmds.ls(sl=True)
+	edgeSel = cmds.ls(sl=True, fl=True)
 	objs = cmds.ls(sl=True, o=True)
 	objTrans = cmds.listRelatives(cmds.ls(sl=True, o=True), p=True)
-
-	#creates extra uv set to work in
 	cmds.polyUVSet(create=True, uvSet="facecut")
 	cmds.polyUVSet(currentLastUVSet=True)
-
-	#runs planar projection for basic UVs, cuts selected edges
 	projection= cmds.polyProjection(objs[0], type='Planar', md='p')
 	cut=cmds.polyMapCut(edgeSel)
-
-	#select a face and convert selection to shell, select faces
-	firstFace = (objTrans[0] + ".map[0]")
-	cmds.select(firstFace, r=True)
+	cmds.select(edgeSel[0])
+	cmds.textureWindow("polyTexturePlacementPanel1", e=True, selectRelatedFaces=True)
+	cmds.polyListComponentConversion(fe=True, fuv=True)
+	faceSel=cmds.ls(sl=True, fl=True)[-1]
+	cmds.select(faceSel, r=True)
 	cmds.ConvertSelectionToUVShell()
-	cmds.ConvertSelectionToFaces()
+	# cmds.ConvertSelectionToFaces()
 	cmds.polyUVSet(delete=True)
-	cmds.delete(cut)
-	cmds.delete(projection)
+	sel=cmds.ls(sl=True)
+	print sel
 	#mel.eval('InvertSelection;')
+#textureWindow -e -selectRelatedFaces polyTexturePlacementPanel1;
+#polyListComponentConversion -fv -fe -fuv -tf -te;
+
+#ConvertSelectionToFaces;
+#selectType -ocm -alc false;
+#selectType -ocm -polymeshFace true;
+#PolySelectConvert 1;
 
 jc_faceCut()
