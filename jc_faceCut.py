@@ -1,13 +1,15 @@
+# Works with Python 2.7 Maya 2018
 # given a a complete edge loop or enclosure of edges,
 # this script will select all faces within the edge perimeter
 
 import maya.cmds as cmds
 import maya.mel as mel
 def jc_faceCut():
-
+    
 	# collect selected edges and obj name
 	edgeSel = cmds.ls(sl=True)
 	objs = cmds.ls(sl=True, o=True)
+	objTrans = cmds.listRelatives(cmds.ls(sl=True, o=True), p=True)
 
 	#creates extra uv set to work in
 	cmds.polyUVSet(create=True, uvSet="facecut")
@@ -18,11 +20,13 @@ def jc_faceCut():
 	cut=cmds.polyMapCut(edgeSel)
 
 	#select a face and convert selection to shell, select faces
-	firstFace = (objs[0] + ".map[0]")
+	firstFace = (objTrans[0] + ".map[0]")
 	cmds.select(firstFace, r=True)
 	cmds.ConvertSelectionToUVShell()
 	cmds.ConvertSelectionToFaces()
 	cmds.polyUVSet(delete=True)
 	cmds.delete(cut)
 	cmds.delete(projection)
-	# mel.eval('InvertSelection;')
+	#mel.eval('InvertSelection;')
+
+jc_faceCut()
