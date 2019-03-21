@@ -1,7 +1,8 @@
 # Works with Python 2.7 Maya 2018
-# when given two selections will alternate the visibilities for the objects
-# will also turn off selection highlighting for better view
+# when given two selections, will alternate the visibilities between them
+# will also turn off selection highlighting for better viewing
 # jc_dualToggleOff will turn on all visibilities and turn on selection highlighting
+
 
 import maya.cmds as cmds
 import maya.mel as mel
@@ -43,7 +44,7 @@ def jc_dualToggleOff():
     if "modelPanel" not in panel:
         panel = "modelPanel4"
     cmds.modelEditor(panel, e=True, sel=True)
-    
+
     selection = cmds.ls(sl=True)
     for i in selection:
         cmds.setAttr(i+".visibility", 1)
