@@ -1,3 +1,5 @@
+# Works with Python 2.7 Maya 2018
+# kills all namespaces, may need to be run multiple times to kill all namespaces
 import maya.cmds as cmds
 
 def jc_namespaceRemover():
