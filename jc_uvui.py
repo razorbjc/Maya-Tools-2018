@@ -121,20 +121,20 @@ class jc_uvui(object):
         widthe = 124
 
         white = [1,1,1]
-        red = [.9,.5,.5]
+        red = [.9,.45,.5]
         blue = [.5,.75,.9]
-        green = [.4, .75, .4]
-        yellow = [.9,.85,.45]
-        orange = [.8,.3,.4]
+        green = [.45, .75, .45]
+        yellow = [.95,.85,.45]
+        orange = [.9,.6,.2]
         purple = [.65,.5,.85]
 
         cmds.rowLayout(numberOfColumns=3, columnAlign1="center", p=columnMain)
         cmds.button(label="Rot. L", width=widtha, bgc=white, command=self.rotateLeft)
-        cmds.button(label="Orient", width=widtha, bgc=blue, command=self.orientShells)
+        cmds.button(label="Orient", width=widtha, bgc=red, command=self.orientShells)
         cmds.button(label="Rot. R", width=widtha, bgc=white, command=self.rotateRight)
         cmds.rowLayout(numberOfColumns=2, columnAlign1="center", p=columnMain)
-        cmds.button(label="Flip U", width=widthb, bgc=red, command=self.udimFlipU)
-        cmds.button(label="Flip V", width=widthb, bgc=red, command=self.udimFlipV)
+        cmds.button(label="Flip U", width=widthb, bgc=blue, command=self.udimFlipU)
+        cmds.button(label="Flip V", width=widthb, bgc=blue, command=self.udimFlipV)
 
         cmds.rowLayout(numberOfColumns=1, p=columnMain, height=5)
 
@@ -165,9 +165,9 @@ class jc_uvui(object):
         cmds.button(label="Set TD", width=widthb, bgc=yellow, command=self.setTD)
 
         cmds.rowLayout(numberOfColumns=3, p=columnMain)
-        cmds.button(label="Stack", width=widthb, bgc=purple, command=self.stackShells)
-        cmds.button(label="U", width=widthc, bgc=purple, command=self.distributeU)
-        cmds.button(label="V", width=widthc, bgc=purple, command=self.distributeV)
+        cmds.button(label="Stack", width=widthb, bgc=orange, command=self.stackShells)
+        cmds.button(label="U", width=widthc, bgc=orange, command=self.distributeU)
+        cmds.button(label="V", width=widthc, bgc=orange, command=self.distributeV)
 
         cmds.rowLayout(numberOfColumns=1, p=columnMain)
         cmds.button(label="Layout", width=widthe, bgc=white, command=self.layoutUnfold3d)
@@ -195,7 +195,7 @@ class jc_uvui(object):
 
         cmds.rowLayout(numberOfColumns=2, p=columnMain)
         cmds.button(label="3DCutSew", width=widthb, bgc=green, command=self.cutsew3d)
-        cmds.button(label="AutoSeam", width=widthb, bgc=purple, command=self.autoSeams)
+        cmds.button(label="AutoSeam", width=widthb, bgc=orange, command=self.autoSeams)
 
         cmds.rowLayout(numberOfColumns=1, p=columnMain, height=4)
 
@@ -297,6 +297,7 @@ class jc_uvui(object):
     def layoutUnfold3d(self, *args):
         scaleOn = cmds.checkBox(self.layoutScaleBox, q=True, value=True)
         rotateOn = cmds.checkBox(self.layoutRotateBox, q=True, value=True)
+        startUdim = self.getUdim()
         if scaleOn and rotateOn:
             print "scale and rotate checked!"
             cmds.polyMultiLayoutUV(prescale=2, layoutMethod=1, rotateForBestFit=1,
@@ -317,6 +318,8 @@ class jc_uvui(object):
             cmds.u3dLayout(res=256, spc=0.005, mar=0.005)
 
         # cmds.u3dLayout(res=256, spc=0.015, mar=0.01)
+
+        cmds.polyEditUV(u=startUdim[0], v=startUdim[1])
 
     def layoutLegacy(self, *args):
         cmds.polyMultiLayoutUV(prescale=2, layoutMethod=1, rotateForBestFit=1,
@@ -366,10 +369,20 @@ class jc_uvui(object):
         cmds.select(cmds.ls(sl=True, o=True))
 
     def distributeV(self, *args):
+        startCenter = self.getCenter()
         mel.eval('texDistributeShells(0, 0.01, "up", {});')
+        endCenter = self.getCenter()
+        print startCenter, endCenter
+        cmds.polyEditUV(u=(startCenter[0]-endCenter[0]), v=(startCenter[1]-endCenter[1]))
+        mel.eval('texPivotCycle selection middle;')
 
     def distributeU(self, *args):
+        startCenter = self.getCenter()
         mel.eval('texDistributeShells(0, 0.01, "right", {});')
+        endCenter = self.getCenter()
+        print startCenter, endCenter
+        cmds.polyEditUV(u=(startCenter[0]-endCenter[0]), v=(startCenter[1]-endCenter[1]))
+        mel.eval('texPivotCycle selection middle;')
 
     def autoSeams(self, *args):
         mel.eval('performPolyAutoSeamUV 0;')
@@ -433,4 +446,20 @@ class jc_uvui(object):
         mesh = cmds.ls(sl=True,o=True)
 
         cmds.delete(mesh,ch=True)
+
+    def getUdim(self):
+        maxmin = cmds.polyEvaluate(bc2=True) #tuple of two pairs in Python: ((xmin,xmax), (ymin,ymax))
+        uAvg = (maxmin[0][0] + maxmin[0][1])/2
+        vAvg = (maxmin[1][0] + maxmin[1][1])/2
+        uTile = math.floor(uAvg)
+        vTile = math.floor(vAvg)
+        udimTuple = (uTile, vTile)
+        return udimTuple
+
+    def getCenter(self):
+        maxmin = cmds.polyEvaluate(bc2=True) #tuple of two pairs in Python: ((xmin,xmax), (ymin,ymax))
+        uAvg = (maxmin[0][0] + maxmin[0][1])/2
+        vAvg = (maxmin[1][0] + maxmin[1][1])/2
+        centerTuple = (uAvg, vAvg)
+        return centerTuple
 
