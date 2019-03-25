@@ -121,10 +121,10 @@ class jc_uvui(object):
         widthe = 124
 
         white = [1,1,1]
-        red = [.9,.45,.5]
+        red = [.9,.45,.45]
         blue = [.5,.75,.9]
-        green = [.45, .75, .45]
-        yellow = [.95,.85,.45]
+        green = [.45, .8, .45]
+        yellow = [.95,.85,.5]
         orange = [.9,.6,.2]
         purple = [.65,.5,.85]
 
@@ -165,9 +165,9 @@ class jc_uvui(object):
         cmds.button(label="Set TD", width=widthb, bgc=yellow, command=self.setTD)
 
         cmds.rowLayout(numberOfColumns=3, p=columnMain)
-        cmds.button(label="Stack", width=widthb, bgc=orange, command=self.stackShells)
-        cmds.button(label="U", width=widthc, bgc=orange, command=self.distributeU)
-        cmds.button(label="V", width=widthc, bgc=orange, command=self.distributeV)
+        cmds.button(label="Stack", width=widthb, bgc=purple, command=self.stackShells)
+        cmds.button(label="U", width=widthc, bgc=purple, command=self.distributeU)
+        cmds.button(label="V", width=widthc, bgc=purple, command=self.distributeV)
 
         cmds.rowLayout(numberOfColumns=1, p=columnMain)
         cmds.button(label="Layout", width=widthe, bgc=white, command=self.layoutUnfold3d)
@@ -194,8 +194,8 @@ class jc_uvui(object):
         cmds.button(label="Mirror", width=widthb, bgc=yellow, command=self.mirror)
 
         cmds.rowLayout(numberOfColumns=2, p=columnMain)
-        cmds.button(label="3DCutSew", width=widthb, bgc=green, command=self.cutsew3d)
-        cmds.button(label="AutoSeam", width=widthb, bgc=orange, command=self.autoSeams)
+        cmds.button(label="CutSew", width=widthb, bgc=green, command=self.cutsew3d)
+        cmds.button(label="AutoSeam", width=widthb, bgc=purple, command=self.autoSeams)
 
         cmds.rowLayout(numberOfColumns=1, p=columnMain, height=4)
 
@@ -250,82 +250,64 @@ class jc_uvui(object):
         mel.eval('uvTkDoSetTexelDensity;')
 
     def udimFlipU(self, *args):
-        boundingBoxInfo = cmds.polyEvaluate(bc2=True)
-        uminmax = boundingBoxInfo[0]
-        ucenter = (uminmax[0] + uminmax[1])/2 # must add and divide by two to find center pivot
-        tilecenter = (math.floor(ucenter))+.5
+        udim = self.getUdim()
+        tilecenter = udim[0] +.5
         cmds.polyEditUV(pivotU=tilecenter, scaleU=-1)
         mel.eval('texPivotCycle selection middle;')
 
     def udimFlipV(self, *args):
-        boundingBoxInfo = cmds.polyEvaluate(bc2=True)
-        vminmax = boundingBoxInfo[1]
-        vcenter = (vminmax[0] + vminmax[1])/2 # must add and divide by two to find center pivot
-        tilecenter = (math.floor(vcenter))+.5
+        udim = self.getUdim()
+        tilecenter = udim[1] +.5
         cmds.polyEditUV(pivotV=tilecenter, scaleV=-1)
         mel.eval('texPivotCycle selection middle;')
 
     def udimCenter(self, *args):
-        boundingBoxInfo = cmds.polyEvaluate(bc2=True) #return tuple of UV boundinbox max and min for U and V
-        uminmax = boundingBoxInfo[0] #separate u and v (max,min)
-        vminmax = boundingBoxInfo[1]
-        ucenter = (uminmax[0] + uminmax[1])/2 # must add and divide by two to find center pivot
-        vcenter = (vminmax[0] + vminmax[1])/2
-        utarget = (math.floor(ucenter))+.5 # find center of udim
-        vtarget = (math.floor(vcenter))+.5
-        cmds.polyEditUV(u=(utarget-ucenter), v=(vtarget-vcenter))
+        center = self.getCenter()
+        udim = self.getUdim()
+        utarget = udim[0] +.5 # find center of udim
+        vtarget = udim[1] +.5
+        cmds.polyEditUV(u=(utarget-center[0]), v=(vtarget-center[1]))
         mel.eval('texPivotCycle selection middle;')
 
     def udimMax(self, *args):
-        boundingBoxInfo = cmds.polyEvaluate(bc2=True)
-        uminmax = boundingBoxInfo[0]
-        vminmax = boundingBoxInfo[1]
-        ucenter = (uminmax[0] + uminmax[1])/2 # must add and divide by two to find center pivot
-        vcenter = (vminmax[0] + vminmax[1])/2
+        center = self.getCenter()
+        uminmax, vminmax, = cmds.polyEvaluate(bc2=True)
         width = math.fabs(uminmax[0] - uminmax[1])
         height = math.fabs(vminmax[0] - vminmax[1])
         if (width > height):
-            factor = .99/width
+            factor = .98/width
         else:
-            factor = .99/height
-        cmds.polyEditUV(pivotU=ucenter, pivotV=vcenter, scaleV=factor, scaleU=factor)
+            factor = .98/height
+        cmds.polyEditUV(pivotU=center[0], pivotV=center[1], scaleV=factor, scaleU=factor)
         mel.eval('texPivotCycle selection middle;')
 
     def symmetrize(self, *args):
-        mel.eval('SymmetrizeUV;')
+        udim = self.getUdim()
+        cmds.setToolTo("texSymmetrizeUVContext")
+        cmds.optionVar(fv=('polySymmetrizeUVAxisOffset',udim[0]+.5))
 
     def layoutUnfold3d(self, *args):
         scaleOn = cmds.checkBox(self.layoutScaleBox, q=True, value=True)
         rotateOn = cmds.checkBox(self.layoutRotateBox, q=True, value=True)
         startUdim = self.getUdim()
         if scaleOn and rotateOn:
-            print "scale and rotate checked!"
-            cmds.polyMultiLayoutUV(prescale=2, layoutMethod=1, rotateForBestFit=1,
-                               flipReversed=True, percentageSpace=.5, layout=2,
-                               gridU=2, gridV=2, scale=1, sizeU=1,
-                               sizeV=1, offsetU=0, offsetV=0)
+            cmds.u3dLayout(res=256, spc=0.007, mar=0.01, scl=1, rst=90)
+            # cmds.polyMultiLayoutUV(prescale=2, layoutMethod=1, rotateForBestFit=1, #ps determines tile margin
+            #                    flipReversed=True, percentageSpace=1, layout=2,
+            #                    gridU=2, gridV=2, scale=1, sizeU=1,
+            #                    sizeV=1, offsetU=0, offsetV=0)
 
         elif scaleOn and not rotateOn:
-            print "scale is checked and rotate is unchecked!"
-            cmds.u3dLayout(res=256, spc=0.005, mar=0.005, scl=1)
+            cmds.u3dLayout(res=256, spc=0.007, mar=0.01, scl=1) # mar determines tile margin, spc is shell space
 
         elif rotateOn and not scaleOn:
-            print "scale is unchecked and rotate is checked!"
-            cmds.polyMultiLayoutUV(lm=1, sc=1, rbf=2, fr=1, ps=0.5, l=2, gu=1, gv=1, psc=0, su=1, sv=1, ou=0, ov=0)
+            cmds.u3dLayout(res=256, spc=0.007, mar=0.01, scl=0, rst=90)
+            # cmds.polyMultiLayoutUV(lm=1, sc=1, rbf=2, fr=1, ps=1, l=2, gu=1, gv=1, psc=0, su=1, sv=1, ou=0, ov=0)
 
         else:
-            print "scale and rotate unchecked!"
-            cmds.u3dLayout(res=256, spc=0.005, mar=0.005)
-
-        # cmds.u3dLayout(res=256, spc=0.015, mar=0.01)
+            cmds.u3dLayout(res=256, spc=0.007, mar=0.01)
 
         cmds.polyEditUV(u=startUdim[0], v=startUdim[1])
-
-    def layoutLegacy(self, *args):
-        cmds.polyMultiLayoutUV(prescale=2, layoutMethod=1, rotateForBestFit=1,
-                               flipReversed=True, percentageSpace=.5, layout=2,
-                               gridU=2, gridV=2, scale=1, sizeU=1,
-                               sizeV=1, offsetU=0, offsetV=0)
 
     def unfoldUV(self, *args):
         cmds.u3dUnfold(ite=1, p=0, bi=1, tf=1, ms=128, rs=0)
@@ -387,66 +369,6 @@ class jc_uvui(object):
     def autoSeams(self, *args):
         mel.eval('performPolyAutoSeamUV 0;')
 
-    def mirror(self, *args):
-        selection = cmds.ls(sl=True) # starting UVs
-        objs = cmds.ls(sl=True, o=True)
-        mel.eval('polySelectBorderShell 1;')
-        mel.eval('ConvertSelectionToContainedEdges;')
-        shellEdges = cmds.ls(sl=True, flatten=True)
-        print "shellEdges:"
-        print shellEdges
-
-        cmds.select(selection)
-        mel.eval('textureWindow -e -selectRelatedFaces polyTexturePlacementPanel1;')
-        mel.eval('polyListComponentConversion -fv -fe -fuv -tf -tuv;')
-        mel.eval('ConvertSelectionToEdgePerimeter')
-        faceList = cmds.ls(sl=True)
-        targetEdges = cmds.ls(sl=True, flatten=True)
-        print"targetEdges:"
-        print targetEdges
-
-        sewEdges = []
-        for i in targetEdges:
-            sewEdges.append(i)
-        for i in targetEdges:
-            if i in shellEdges:
-                print "removing %s" % i
-                sewEdges.remove(i)
-        print "sewEdges:"
-        print sewEdges
-
-        cmds.select(selection)
-        mel.eval('textureWindow -e -selectRelatedFaces polyTexturePlacementPanel1;')
-        mel.eval('polyListComponentConversion -fv -fe -fuv -tf -tuv;')
-        cmds.transferAttributes(transferPositions=1, transferNormals=0, transferUVs=2, transferColors= 0, sampleSpace= 0, searchMethod= 3,searchScaleX =-1.0, flipUVs= 1, colorBorders=1)
-
-        for i in sewEdges:
-             cmds.polyMapSew(i)
-        cmds.select(cmds.ls(sl=True, o=True))
-        mel.eval('DeleteHistory;')
-        cmds.select(objs)
-
-
-    def mirrorUV(self, *args):
-        faceListBefore = self.getFaceList()
-        oldLoc = self.getFaceLoc()
-        cmds.ConvertSelectionToFaces()
-
-        cmds.transferAttributes(transferPositions=0,transferNormals=0, transferUVs=2, transferColors= 0, sampleSpace= 0, searchMethod= 3,searchScaleX =-1.0, flipUVs= 1, colorBorders=1)
-
-        faceListAfter = self.getFaceList()
-
-        newLoc = self.getFaceLoc()
-
-        cmds.ConvertSelectionToFaces()
-        difPosU = oldLoc[0]- newLoc[0]
-        difPosV = oldLoc[1]- newLoc[1]
-        cmds.select(faceListAfter,r=True)
-        cmds.polyEditUV(u=difPosU , v=difPosV)
-        mesh = cmds.ls(sl=True,o=True)
-
-        cmds.delete(mesh,ch=True)
-
     def getUdim(self):
         maxmin = cmds.polyEvaluate(bc2=True) #tuple of two pairs in Python: ((xmin,xmax), (ymin,ymax))
         uAvg = (maxmin[0][0] + maxmin[0][1])/2
@@ -463,3 +385,133 @@ class jc_uvui(object):
         centerTuple = (uAvg, vAvg)
         return centerTuple
 
+    def mirror(self, *args):
+        cmds.ConvertSelectionToContainedFaces()
+        selection = cmds.ls(sl=True) # starting UVs
+        objs = cmds.ls(sl=True, o=True)
+
+        cmds.select(selection)
+        mel.eval('textureWindowSelectConvert 4;')
+        mel.eval('polySelectBorderShell 1;')
+        cmds.ConvertSelectionToContainedEdges()
+        shellEdges = cmds.ls(sl=True, flatten=True) #get border edge of UV shell
+
+        cmds.select(selection) #get selected faces
+        mel.eval('PolySelectTraverse 1;') # grow face selection
+        cmds.ConvertSelectionToEdgePerimeter() #grab selection perimeter
+        selPerimeter = cmds.ls(sl=True, flatten=True) #get border edge of user selection
+
+        sewEdges = []
+        for i in selPerimeter:
+            if i not in shellEdges:
+                sewEdges.append(i) #get list of edges to sew, selection border edge that is NOT a shell edge
+
+        cmds.select(selection) # select faces to run transfer Attributes
+        mel.eval('textureWindowSelectConvert 4;') # convert selection to UVs
+        mel.eval('PolySelectTraverse 1;') # grow selection without crossing UV borders
+        cmds.ConvertSelectionToContainedFaces()
+
+        startUdim = self.getUdim()
+        cmds.transferAttributes(transferPositions=0, transferNormals=0, transferUVs=2, transferColors= 0,
+                                sampleSpace= 0, searchMethod= 3,searchScaleX =-1.0, flipUVs= 1, colorBorders=1)
+        endUdim = self.getUdim()
+
+        # clean history and move back to original UDIM, sew edges
+        cmds.delete(objs[0],ch=True)
+        cmds.polyEditUV(u=(startUdim[0]-endUdim[0]), v=0)
+
+        for i in sewEdges:
+            cmds.polyMapSew(i)
+
+        cmds.select(selection)
+        mel.eval('BakeNonDefHistory;')
+
+    def mirrorD(self, *args):
+        cmds.ConvertSelectionToContainedFaces()
+        selection = cmds.ls(sl=True) # starting UVs
+        objs = cmds.ls(sl=True, o=True)
+        print "obj:", objs
+
+        cmds.select(selection)
+        mel.eval('textureWindowSelectConvert 4;')
+        mel.eval('polySelectBorderShell 1;')
+        cmds.ConvertSelectionToContainedEdges()
+        shellEdges = cmds.ls(sl=True, flatten=True) #get border edge of UV shell
+        print "shellEdges:"
+        print shellEdges
+
+        cmds.select(selection) #get selected faces
+        mel.eval('PolySelectTraverse 1;') # grow face selection
+        cmds.ConvertSelectionToEdgePerimeter() #grab selection perimeter
+        selPerimeter = cmds.ls(sl=True, flatten=True) #get border edge of user selection
+        print"selectionPerimeter Edges:"
+        print selPerimeter
+
+        sewEdges = []
+        for i in selPerimeter:
+            if i not in shellEdges:
+                sewEdges.append(i) #get list of edges to sew, selection border edge that is NOT a shell edge
+        print sewEdges
+
+
+        cmds.select(selection) # select faces to run transfer Attributes
+        mel.eval('textureWindowSelectConvert 4;') # convert selection to UVs
+        mel.eval('PolySelectTraverse 1;') # grow selection without crossing UV borders
+        cmds.ConvertSelectionToContainedFaces()
+
+        startUdim = self.getUdim()
+        cmds.transferAttributes(transferPositions=0, transferNormals=0, transferUVs=2, transferColors= 0,
+                                sampleSpace= 0, searchMethod= 3,searchScaleX =-1.0, flipUVs= 1, colorBorders=1)
+        endUdim = self.getUdim()
+
+        # clean history and move back to original UDIM, sew edges
+        cmds.delete(objs[0],ch=True)
+        cmds.polyEditUV(u=(startUdim[0]-endUdim[0]), v=0)
+
+        for i in sewEdges:
+            cmds.polyMapSew(i)
+
+        cmds.select(selection)
+        mel.eval('BakeNonDefHistory;')
+
+    def getFaceList(self):
+
+        faceFilter= cmds.filterExpand(selectionMask=34)
+
+        if faceFilter:
+            faces = cmds.ls(sl=True,l=True)
+        else:
+            raise NameError('You must only Select Face Components!')
+        return faces
+
+    def getFaceLoc(self):
+        #select list of uv's in first entry
+        cmds.ConvertSelectionToUVs()
+        uvList = cmds.ls(sl=True,l=True)
+        uvLocs =cmds.polyEditUVShell(uvList,q=True)
+
+        uLocs = uvLocs[0::2]
+        vLocs = uvLocs[1::2]
+        uAvgLoc = math.floor(sum(uLocs)/float(len(uLocs)))
+        vAvgLoc = math.floor(sum(vLocs)/float(len(vLocs)))
+
+        uvLocList = []
+        uvLocList.append(uAvgLoc)
+        uvLocList.append(vAvgLoc)
+
+        return uvLocList
+
+    def uv_transferMirror(self,*args):
+        faceListBefore = self.getFaceList()
+        oldLoc = self.getFaceLoc()
+        cmds.ConvertSelectionToFaces()
+        cmds.transferAttributes(transferPositions=0,transferNormals=0, transferUVs=2, transferColors= 0, sampleSpace= 0, searchMethod= 3,searchScaleX =-1.0, flipUVs= 1, colorBorders=1)
+        faceListAfter = self.getFaceList()
+        newLoc = self.getFaceLoc()
+        cmds.ConvertSelectionToFaces()
+        difPosU = oldLoc[0]- newLoc[0]
+        difPosV = oldLoc[1]- newLoc[1]
+        cmds.select(faceListAfter,r=True)
+        cmds.polyEditUV(u=difPosU , v=difPosV)
+        mesh = cmds.ls(sl=True,o=True)
+        cmds.delete(mesh,ch=True)
