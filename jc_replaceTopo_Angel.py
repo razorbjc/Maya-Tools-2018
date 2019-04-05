@@ -1,13 +1,18 @@
 #!/usr/bin/env python2.7
 
+"""
+TODO: Add script docstring here...
+
+__author__: James Chan
+"""
+
 import maya.cmds as cmds
 import maya.mel as mel
 import math
 
 
-
-class jc_replaceTopo(object):
-    windowName = "jc_replaceTopo"
+class replaceTopo(object):
+    windowName = "replaceTopo"
 
     def __init__(self):
         self.newMesh= "None"
