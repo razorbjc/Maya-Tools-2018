@@ -1,13 +1,18 @@
 #!/usr/bin/env python2.7
 
+"""
+A custom UV toolset that allows access to the most commonly used tools
+
+__author__: James Chan
+"""
+
 import maya.cmds as cmds
 import maya.mel as mel
 import math
 
 
-
-class jc_uvui(object):
-    windowName = "jc_UVUI_window"
+class uvui(object):
+    windowName = "UVUI_window"
 
     def launch(self):
         # checks if window is already open, closes and recreates if it is
@@ -52,7 +57,7 @@ class jc_uvui(object):
 
         cmds.rowLayout(numberOfColumns=3, p=columnMain)
         cmds.button(label="<", width=40, bgc=white, command=self.translateLeft)
-        self.transDistance = cmds.floatField(ed=True,v=1.0, precision = 2,s=.25,w=40)
+        self.transDistance = cmds.floatField(ed=True, v=1.0, precision=2, s=.25, w=40)
         cmds.button(label=">", width=40, bgc=white, command=self.translateRight)
 
         cmds.rowLayout(numberOfColumns=3, p=columnMain)
@@ -123,23 +128,27 @@ class jc_uvui(object):
     def rotateRight(self, *args):
         mel.eval('polyRotateUVs -45 1;')
 
+    def getDistance(self, *args):
+        distance = cmds.floatField(self.transDistance, q=True, v=True)
+        return distance
+
     def translateUp(self, *args):
-        distance = cmds.floatField(self.transDistance,q=True,v=True)
+        distance = getDistance()
         cmds.polyEditUV(u=0, v=distance)
         mel.eval('texPivotCycle selection middle;')
 
     def translateRight(self, *args):
-        distance = cmds.floatField(self.transDistance,q=True,v=True)
+        distance = getDistance()
         cmds.polyEditUV(u=distance, v=0)
         mel.eval('texPivotCycle selection middle;')
 
     def translateLeft(self, *args):
-        distance = cmds.floatField(self.transDistance,q=True,v=True)
+        distance = getDistance()
         cmds.polyEditUV(u=-(distance), v=0)
         mel.eval('texPivotCycle selection middle;')
 
     def translateDown(self, *args):
-        distance = cmds.floatField(self.transDistance,q=True,v=True)
+        distance = getDistance()
         cmds.polyEditUV(u=0, v=-(distance))
         mel.eval('texPivotCycle selection middle;')
 
@@ -240,7 +249,7 @@ class jc_uvui(object):
 
     def cutsew3d(self, *args):
         mel.eval('SetCutSewUVTool;')
-        
+
     def transUVTopo(self, *args):
         selection = cmds.ls(sl=True, o=True)
         reference = selection[-1]
@@ -308,6 +317,7 @@ class jc_uvui(object):
         centerTuple = (uAvg, vAvg)
         return centerTuple
 
+    # def mirrorD is the exact same... ===========================================
     def mirror(self, *args):
         cmds.ConvertSelectionToContainedFaces()
         selection = cmds.ls(sl=True)  # starting UVs
@@ -326,11 +336,8 @@ class jc_uvui(object):
         selPerimeter = cmds.ls(sl=True, flatten=True)
 
         sewEdges = []
-        #get list of edges to sew, selection border edge that is NOT a shell edge
+        # get list of edges to sew, selection border edge that is NOT a shell edge
         sewEdges = [i for i in selPerimeter if i not in shellEdges]
-        # for i in selPerimeter:
-        #     if i not in shellEdges:
-        #         sewEdges.append(i) 
 
         cmds.select(selection)  # select faces to run transfer Attributes
         mel.eval('textureWindowSelectConvert 4;')  # convert selection to UVs
@@ -361,7 +368,7 @@ class jc_uvui(object):
 
     def mirrorD(self, *args):
         cmds.ConvertSelectionToContainedFaces()
-        selection = cmds.ls(sl=True) # starting UVs
+        selection = cmds.ls(sl=True)  # starting UVs
         objs = cmds.ls(sl=True, o=True)
         print "obj:", objs
 
@@ -369,24 +376,19 @@ class jc_uvui(object):
         mel.eval('textureWindowSelectConvert 4;')
         mel.eval('polySelectBorderShell 1;')
         cmds.ConvertSelectionToContainedEdges()
-        shellEdges = cmds.ls(sl=True, flatten=True) #get border edge of UV shell
-        print "shellEdges:"
-        print shellEdges
+        shellEdges = cmds.ls(sl=True, flatten=True)  # get border edge of UV shell
+        print "shellEdges:\n %s" % shellEdges
 
         cmds.select(selection)  # get selected faces
         mel.eval('PolySelectTraverse 1;')  # grow face selection
         cmds.ConvertSelectionToEdgePerimeter()  # grab selection perimeter
         # get border edge of user selection
         selPerimeter = cmds.ls(sl=True, flatten=True)
-        print"selectionPerimeter Edges:"
-        print selPerimeter
+        print"selectionPerimeter Edges:\n %s" % selPerimeter
 
         sewEdges = []
-        #get list of edges to sew, selection border edge that is NOT a shell edge
+        # get list of edges to sew, selection border edge that is NOT a shell edge
         sewEdges = [i for i in selPerimeter if i not in shellEdges]
-        # for i in selPerimeter:
-        #     if i not in shellEdges:
-        #         sewEdges.append(i) 
         print sewEdges
 
 
@@ -418,20 +420,16 @@ class jc_uvui(object):
         mel.eval('BakeNonDefHistory;')
 
     def getFaceList(self):
-
         faceFilter= cmds.filterExpand(selectionMask=34)
-
-        if faceFilter:
-            faces = cmds.ls(sl=True,l=True)
-        else:
+        if not faceFilter:
             raise NameError('You must only Select Face Components!')
-        return faces
+        return cmds.ls(sl=True, l=True)
 
     def getFaceLoc(self):
-        #select list of uv's in first entry
+        # select list of uv's in first entry
         cmds.ConvertSelectionToUVs()
-        uvList = cmds.ls(sl=True,l=True)
-        uvLocs =cmds.polyEditUVShell(uvList,q=True)
+        uvList = cmds.ls(sl=True, l=True)
+        uvLocs = cmds.polyEditUVShell(uvList, q=True)
 
         uLocs = uvLocs[0::2]
         vLocs = uvLocs[1::2]
@@ -465,4 +463,4 @@ class jc_uvui(object):
         cmds.select(faceListAfter, r=True)
         cmds.polyEditUV(u=difPosU , v=difPosV)
         mesh = cmds.ls(sl=True, o=True)
-        cmds.delete(mesh,ch=True)
+        cmds.delete(mesh, ch=True)
