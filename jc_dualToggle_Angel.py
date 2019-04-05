@@ -1,10 +1,12 @@
 #!/usr/bin/env python2.7
 
-# Works with Python 2.7 Maya 2018
-# when given two selections, will alternate the visibilities between them
-# will also turn off selection highlighting for better viewing
-# dualToggleOff will turn on all visibilities and turn on selection highlighting
+"""
+Works with Maya 2018
+When given two selections, will alternate the visibilities between them
+will also turn off selection highlighting for better viewing.
 
+__author__: James Chan
+"""
 
 import maya.cmds as cmds
 
@@ -18,7 +20,7 @@ def setModelPanel():
     cmds.modelEditor(panel, e=True, sel=False)
 
 
-def dualToggle():
+def dualToggleOn():
     setModelPanel()
     selection = cmds.ls(sl=True)
     firstObj, secondObj = selection
@@ -49,3 +51,7 @@ def dualToggleOff():
     selections = cmds.ls(sl=True)
     for selection in selections:
         cmds.setAttr("%s.visibility" % selection, 1)
+
+
+if __name__ == '__main__':
+    main()
