@@ -18,12 +18,10 @@ def curvetube():
     for i in sel:
         if cmds.nodeType(cmds.listRelatives(i)) == 'mesh':
             print "mesh!"
-            tube_to_curveb(i)
-            return
+            tube_to_curve_a(i)
         elif cmds.nodeType(cmds.listRelatives(i)) == 'nurbsCurve':
             print "nurbsCurve!"
-            result = curve_to_tubeb(i)
-            return
+            result = curve_to_tube_a(i)
         else:
             continue
 
@@ -38,11 +36,11 @@ def curvetube():
     cmds.select(result_list)
     return
 
-def curve_to_tubeb(sel_curve):  # original with nurb circle extrusion
+def curve_to_tube_a(sel_curve):  # original with nurb circle extrusion
     print "curve to tube"
     orig_loc = cmds.pointPosition(sel_curve+".cv[0]")
     cv_loc = cmds.pointPosition(sel_curve+".cv[1]")
-    circle_var = cmds.circle(r=1, sections=8, nr=(0,1,0))[0]
+    circle_var = cmds.circle(r=1, sections=6, nr=(0,1,0))[0]
     locator_var = cmds.spaceLocator(p=(0,0,0))[0]
     cmds.select(circle_var, r=True)
     cmds.move(orig_loc[0],orig_loc[1],orig_loc[2])
@@ -80,7 +78,7 @@ def curve_to_tubeb(sel_curve):  # original with nurb circle extrusion
     return final
 
 
-def curve_to_tube(sel_curve): # new with polygon face extrusion
+def curve_to_tube_b(sel_curve): # new with polygon face extrusion
     print "curve to tube"
     orig_loc = cmds.pointPosition(sel_curve+".cv[0]")
     cv_loc = cmds.pointPosition(sel_curve+".cv[1]")
@@ -124,7 +122,7 @@ def buildcurve(coord_array):
 
 
 
-def tube_to_curve(tube):
+def tube_to_curve_b(tube):
     print "tube to curve"
     cmds.select(tube)
     obj = cmds.ls(sl=True, o=True)
@@ -168,7 +166,7 @@ def tube_to_curve(tube):
     #buildcurve(coord_array)
 
 
-def tube_to_curveb(tube):
+def tube_to_curve_a(tube):
     print "tube to curve"
     cmds.select(tube)
     cmds.ConvertSelectionToVertices()
