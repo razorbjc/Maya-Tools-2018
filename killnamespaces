@@ -9,7 +9,7 @@ __author__: James Chan
 import maya.cmds as cmds
 
 
-def namespace_remover():
+def killnamespaces():
     cmds.namespace(setNamespace=':')
     namespaces = cmds.namespaceInfo(listOnlyNamespaces=True, recurse=True)
     if namespaces:
