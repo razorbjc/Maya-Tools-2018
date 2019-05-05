@@ -10,7 +10,9 @@ import maya.cmds as cmds
 import maya.OpenMayaUI as omui
 from shiboken2 import wrapInstance
 import jc_smartcombine
-
+import jc_uvui
+import jc_smartextract
+import jc_facecut
 from Qt import QtGui, QtWidgets, QtCore # https://github.com/mottosso/Qt.py by Marcus Ottosson
 
 
@@ -25,9 +27,9 @@ def dock_window(dialog_class):
     # building the workspace control with maya.cmds
     main_control = cmds.workspaceControl(dialog_class.CONTROL_NAME,
                                          ttc=["AttributeEditor", -1],
-                                         iw=300,
-                                         mw=True,
-                                         wp='preferred',
+                                         iw=200,
+                                         mw=200,
+                                         wp='fixed',
                                          label = dialog_class.DOCK_LABEL_NAME)
 
     # now lets get a C++ pointer to it using OpenMaya
@@ -71,35 +73,48 @@ class MyDockingUI(QtWidgets.QWidget):
     def buildUI(self):
         USERAPPDIR = cmds.internalVar(userPrefDir=True)
         logopath = os.path.join(USERAPPDIR, "\icons\iconTest1.png")
+        logopathb = os.path.join(USERAPPDIR, "\icons\\")
         print logopath
+        print logopathb
+
         # window = cmds.window()
         # cmds.paneLayout()
-        cmds.image( image=logopath)
         # self.my_label = QtWidgets.QLabel('hello world!')
         # self.layout.addWidget(self.my_label)
+        icon_d = 32
+        buth = 24
+        butw = 155
+        mainColumn=cmds.columnLayout( adjustableColumn=True)
+        cmds.rowLayout(numberOfColumns=2, parent = mainColumn)
+        cmds.text(label="", width=70)
+        cmds.symbolButton( image=os.path.join(USERAPPDIR, "\icons\jtools_icon.png"),
+                           w=48,
+                           h=48)
         ###############################################################
+        cmds.frameLayout( label='Tools', cll=True, cl=False, marginWidth = 0,
+                          marginHeight=5, width=210, p=mainColumn)
 
-        cmds.scrollLayout( 'scrollLayout' )
-
-        mainColumn=cmds.columnLayout( adjustableColumn=True )
-        cmds.frameLayout( label='Simple Tools', cll=True, cl=False, marginWidth = 10,
-                          marginHeight=5, width=225 )
         toolsColumn = cmds.columnLayout()
         cmds.rowLayout(numberOfColumns=2, columnAlign1="center", parent = toolsColumn)
-        cmds.symbolButton( image=logopath, w=24, h=24)
-        cmds.button(label="UV UI", w=150, ann="fuck you")
+        cmds.shelfButton(image="uvui_icon.png", command=self.uvui)
+        cmds.button(label="UV UI", w=butw, h=buth, ann="fuck you", command=self.uvui)
 
         cmds.rowLayout(numberOfColumns=2, columnAlign1="center", parent = toolsColumn)
-        cmds.symbolButton( image=logopath, w=24, h=24)
-        cmds.button(label="Smart Combine", w=150, ann="fuck you")
+        cmds.shelfButton(image="combine_icon.png", command=self.smartcombine)
+        cmds.button(label="Smart Combine", w=butw, h=buth, ann="fuck you", command=self.smartcombine)
 
         cmds.rowLayout(numberOfColumns=2, columnAlign1="center", parent = toolsColumn)
-        cmds.symbolButton( image=logopath, w=24, h=24)
-        cmds.button(label="Smart Extract", w=150, ann="fuck your sister")
+        cmds.shelfButton(image="duplicate_icon.png", command=self.smartduplicate)
+        cmds.button(label="Smart Duplicate", w=butw, h=buth, ann="fuck you", command=self.smartduplicate)
 
         cmds.rowLayout(numberOfColumns=2, columnAlign1="center", parent = toolsColumn)
-        cmds.symbolButton( image=logopath, w=24, h=24)
-        cmds.button(label="Face Cut", w=150)
+        cmds.shelfButton(image="extract_icon.png", command=self.smartextract)
+        cmds.button(label="Smart Extract", w=butw, h=buth, ann="fuck you", command=self.smartextract)
+
+        cmds.rowLayout(numberOfColumns=2, columnAlign1="center", parent = toolsColumn)
+        cmds.shelfButton(image="facecut_icon.png", command=self.facecut)
+        cmds.button(label="FaceCut", w=butw, h=buth, ann="fuck you", command=self.facecut)
+
 
         cmds.rowLayout(numberOfColumns=1, columnAlign1="center", parent = toolsColumn, h=7)
 
@@ -113,30 +128,31 @@ class MyDockingUI(QtWidgets.QWidget):
 
         cmds.rowLayout(numberOfColumns=2, columnAlign1="center", parent = toolsColumn)
         cmds.symbolButton( image=logopath, w=24, h=24)
-        cmds.button(label="Camera Clip Toggle", w=150)
-
-        cmds.rowLayout(numberOfColumns=2, columnAlign1="center", parent = toolsColumn)
-        cmds.symbolButton( image=logopath, w=24, h=24)
-        cmds.button(label="ImagePlane Toggle", w=150)
-
-        cmds.rowLayout(numberOfColumns=2, columnAlign1="center", parent = toolsColumn)
-        cmds.symbolButton( image=logopath, w=24, h=24)
-        cmds.button(label="Kill Namespaces", w=150)
-
-        cmds.rowLayout(numberOfColumns=2, columnAlign1="center", parent = toolsColumn)
-        cmds.symbolButton( image=logopath, w=24, h=24)
-        cmds.button(label="Fix Shape Names", w=150)
+        cmds.shelfButton(image1="extract_icon.png", command=self.smartextract)
 
         ###############################################################
         # cmds.columnLayout( adjustableColumn=True, p=mainColumn)
-        cmds.frameLayout( label='Shelf Buttons', cll=True, cl=True, width=225, p=mainColumn)
+        cmds.frameLayout( label='Shelf Buttons', cll=True, cl=False, width=210, p=mainColumn)
         # cmds.columnLayout()
-        cmds.shelfTabLayout( 'mainShelfTab', imageVisible=True, w=225, h=100 )
-        cmds.shelfLayout( 'J Tools' )
+        cmds.shelfTabLayout( 'mainShelfTab', imageVisible=True, w=50, h=100, bs='full' )
+        cmds.shelfLayout( 'J Tools',style="iconOnly")
         cmds.shelfButton(annotation="Redo last operation.",image1=logopath, command="redo", w=32, h=32)
 
+    def smartcombine(self, *args):
+        jc_smartcombine.smartcombine()
 
+    def smartextract(self, *args):
+        jc_smartextract.smartextract()
 
+    def smartduplicate(self, *args):
+        jc_smartextract.smartduplicate()
+
+    def facecut(self, *args):
+        jc_facecut.facecut()
+
+    def uvui(self, *args):
+        print "UVUI launches"
+        jc_uvui.uvui().launch()
 
 
     @staticmethod
