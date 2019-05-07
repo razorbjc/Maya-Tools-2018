@@ -1,16 +1,22 @@
-# Works with Python 2.7 Maya 2018
-# Used to replace geometry with the same topology
-# User creates a (New Mesh) in the same position as an example of the old mesh (Old Mesh)
-# The Old Mesh acts as a wrap deformer on the New Mesh, then blendshapes into the positions
-# of the "Old Targets". Leaving a duplicate of the New Mesh at each position
+#!/usr/bin/env python2.7
+
+"""
+Works with Maya 2018
+Creates a UI that allows the user to replace old, frozen geo with the same topology
+An 'Old Mesh' is used as a wrap deformer on 'New Mesh'. Then that 'Old Mesh' blendshapes
+into all the 'Old Targets', leaving a duplicate of 'New Mesh' in that position.
+Users can choose to put the duplicates into a new group, or replace the existing old meshes
+
+__author__: James Chan
+"""
 
 import maya.cmds as cmds
 import maya.mel as mel
 import math
 
 
-class jc_replaceTopo(object):
-    windowName = "jc_replaceTopo"
+class replacetopo(object):
+    windowName = "replaceTopo"
 
     def __init__(self):
         self.newMesh= "None"
@@ -23,7 +29,7 @@ class jc_replaceTopo(object):
         if cmds.window(self.windowName, query=True, exists=True):
             cmds.deleteUI(self.windowName)
 
-        cmds.window(self.windowName, title="Replace Topology", minimizeButton=False,
+        cmds.window(self.windowName, title="Replace By Topology", minimizeButton=False,
                     maximizeButton=False, sizeable=False, rtf=True, w=200, h=100)
 
         if cmds.windowPref(self.windowName, e=True):
@@ -35,7 +41,6 @@ class jc_replaceTopo(object):
     def buildUI(self):
         widtha = 75
         widthb = 130
-        widthc = 29
         white = [1,1,1]
 
         columnMain = cmds.columnLayout(columnWidth=200, cal="center")
@@ -53,7 +58,8 @@ class jc_replaceTopo(object):
         cmds.rowLayout(numberOfColumns=3, columnAlign1="center", p=columnMain)
         cmds.button(label="Old Targets", width=widtha, command=self.setOldTargets)
         cmds.text(label="", w=1)
-        self.oldTargetsDisplay=cmds.text(label=self.oldTargets, width=widthb, align="left")
+        self.oldTargetsDisplay=cmds.text(label=self.oldTargets, width=widthb,
+                                         align="left")
 
         cmds.rowLayout(numberOfColumns=2, columnAlign1="center", p=columnMain, h=5)
         cmds.rowLayout(numberOfColumns=2, columnAlign1="center", p=columnMain)
@@ -67,41 +73,40 @@ class jc_replaceTopo(object):
         cmds.button(label="Run!", width=210, bgc=white, command=self.runWrapBlend)
 
     def setNewMesh(self, *args):
-        selection = cmds.ls(sl=True, transforms=True, long=True) #sets new mesh,
+        selection = cmds.ls(sl=True, transforms=True, long=True)
         self.newMesh = selection[0]
-        shortName = selection[0].split("|")[-1] # gets short name for GUI display
+        shortName = selection[0].split("|")[-1]
         cmds.text(self.newMeshDisplay, e=True, label=shortName)
 
     def setOldMesh(self, *args):
-        selection = cmds.ls(sl=True, transforms=True, long=True) #sets old mesh
+        selection = cmds.ls(sl=True, transforms=True, long=True)
         self.oldMesh = selection[0]
-        shortName = selection[0].split("|")[-1] #gets short name for GUI display
+        shortName = selection[0].split("|")[-1]
         cmds.text(self.oldMeshDisplay, e=True, label=shortName)
 
-    def setOldTargets(self, *args): #sets targets
-        selection = cmds.ls(sl=True, dag=True, transforms=True, objectsOnly=True, long=True)
+    def setOldTargets(self, *args):
+        selection = cmds.ls(sl=True, dag=True, transforms=True,
+                            objectsOnly=True, long=True)
         self.oldTargets = selection
         self.groupBank = []
-        displayList = []
         finalString = ""
 
         # put all the oldTargets into displayList for GUI
-        for i in self.oldTargets:
-            displayList.append(i)
+        displayList = [i for i in self.oldTargets]
 
         # search for groups in oldTargets and add them to groupBank[]
-        for i in self.oldTargets:
-            if (self.is_group(i)):
-                self.groupBank.append(i)
+        self.groupBank = [i for i in self.oldTargets if self.is_group(i)]
 
         # remove groups from oldTargets
         for i in self.groupBank:
-            childTransforms = cmds.listRelatives(i, ad=True, type="transform", f=True, pa=True)
+            childTransforms = cmds.listRelatives(i, ad=True, type="transform",
+                                                 f=True, pa=True)
             for j in self.groupBank:
-                if (childTransforms):
-                    if j in childTransforms:
-                        if j in displayList:
-                            displayList.remove(j)
+                if not childTransforms:
+                    continue
+                if j in childTransforms:
+                    if j in displayList:
+                        displayList.remove(j)
 
             self.oldTargets.remove(i)
 
@@ -110,26 +115,19 @@ class jc_replaceTopo(object):
             if (self.is_child(i)):
                 displayList.remove(i)
 
-        # convert displayList into string of short names to display in GUI window
+        # convert displayList into string of short names to display in window
         for i in displayList:
             shortName = i.split("|")[-1]
             finalString = finalString + shortName + " "
 
-        print "Final Display:"
-        print displayList
-        print "Final oldTargs:"
-        print self.oldTargets
         cmds.text(self.oldTargetsDisplay, e=True, label=finalString)
 
     def runWrapBlend(self, *args):
-        print ("addNewSource = %s " % self.newMesh)
-        print ("oldSource = %s" % self.oldMesh)
-        print ("oldTargets = %s" % str(self.oldTargets))
         self.newGroup = None
         self.errorCheck()
         self.cleanMeshes()
-        # if user does not want to replace Old Targets, create a group to place resulting geo in
-        if self.replaceFlag == False:
+
+        if not self.replaceFlag:
             self.newGroup = cmds.group(em=True, name="replaceTopo_GRP")
 
         # Create wrap deformer
@@ -138,46 +136,45 @@ class jc_replaceTopo(object):
         self.wrapName = mel.eval('doWrapArgList "2" { "1","0","1" }')
 
         for target in self.oldTargets:
-            if target == self.oldMesh:         # if oldMesh is among targets, handle separately
+            if target == self.oldMesh:
+                # if oldMesh is among targets, handle separately
                 self.oldMeshIsTarget(target)
                 continue
-                
-            #create blendshape, get blendshape name, and target name
+
+            #create blendshape, get blendshape name and target name
             blendName = cmds.blendShape(target, self.oldMesh, o='world')
             noGroupName = target.split("|")[-1] # get shortname
             shortName = noGroupName.split(":")[-1] # remove namepace from name
             blendString = (blendName[0].encode('ascii','ignore')).decode("utf-8")
 
-            # blend to target, duplicate newshape, parent duplicate to new group, blend back to oldMesh position
+            # blend to target, duplicate newshape, parent duplicate to new group, and
+            # blend back to oldMesh position
             cmds.setAttr(blendString + "." + shortName, 1)
             created = cmds.duplicate(self.newMesh)
-            if self.replaceFlag == True:
+
+            if self.replaceFlag:
                 currentParent = cmds.listRelatives(target, p=True, pa=True, f=True)
-                print currentParent
-                if (currentParent != None):
+                if currentParent is not None:
                     cmds.parent(created, currentParent[0])
-                    print "parented to %s" % currentParent[0]
                 cmds.delete(target)
 
             else:
                 cmds.parent(created, self.newGroup)
             cmds.setAttr(blendString + "." + shortName, 0)
 
-            # delete left-over wrapdeform shape node
             relatives = cmds.listRelatives(created, c=True)
+            # delete left-over wrapdeform shape node
             cmds.delete(relatives[-1])
-            newname = cmds.rename(created, noGroupName)  # rename newly created duplicate to old target's name
+            # rename newly created duplicate to old target's name
+            newname = cmds.rename(created, noGroupName)
             cmds.select(newname)
 
         cmds.delete(self.wrapName)
         cmds.delete(self.oldMesh, all=True, constructionHistory=True)
-        # cmds.delete(self.newMesh, all=True, constructionHistory=True)
         if (self.newGroup):
             cmds.select(self.newGroup)
 
     def is_group(self, node=None):
-        print "entering is_group"
-        print node
         children = cmds.listRelatives(node, c=True, pa=True, f=True)
         if children == None:
             return True
@@ -196,7 +193,6 @@ class jc_replaceTopo(object):
 
         parent = cmds.listRelatives(node, p=True)
         if (parent):
-            print parent[0]
             i = 0
             while i < len(self.groupBank):
                 if parent[0] in str(self.groupBank[i]):
@@ -205,13 +201,9 @@ class jc_replaceTopo(object):
         return False
 
     def cleanMeshes(self, *args):
-        currentSelection = cmds.ls(sl=True)
         cmds.select(self.newMesh)
-        # cmds.select(self.oldMesh, add=True)
-        # cmds.select(self.oldTargets, add=True)
         mel.eval('FreezeTransformations;')
         mel.eval('ResetTransformations;')
-        #mel.eval('DeleteHistory;')
 
     def errorCheck(self, *args):
         # check if meshes exist
@@ -222,36 +214,29 @@ class jc_replaceTopo(object):
         if (self.oldTargets == "None"):
             raise RuntimeError("You need to set Old Targets!")
 
-        # check if all old targets have the same vertcount/topology as the selected old mesh
+        # check if old targets have the same vertcount/topology as the selected old mesh
         vertcount = cmds.polyEvaluate(self.oldMesh, v=True)
-        errorList = []
-        for i in self.oldTargets: # if a vertcount is different, add mesh to the errorList and select them at the end
-            if cmds.polyEvaluate(i, v=True) != vertcount:
-                errorList.append(i)
+        errorList = [i for i in self.oldTargets if cmds.polyEvaluate(i, v=True) != vertcount]
         if (errorList):
             cmds.select(errorList)
             raise RuntimeError("Selected Target does not match Old Mesh Topology!")
 
-
     def replaceFlagOn(self, *args):
         self.replaceFlag=True
-        print "replaceON"
 
     def replaceFlagOff(self, *args):
         self.replaceFlag=False
-        print "replaceOFF"
 
-    def oldMeshIsTarget(self, target): # if the Old Mesh is among the Old Targets, handle separately in this function
-        created = cmds.duplicate(self.newMesh)     #duplicate and continue to next target
+    def oldMeshIsTarget(self, target):
+        # duplicate and continue to next target
+        created = cmds.duplicate(self.newMesh)
         if self.replaceFlag==False:
             cmds.parent(created, self.newGroup)
-
         else:
             currentParent = cmds.listRelatives(target, p=True, pa=True, f=True)
             print currentParent
             if (currentParent):
                  cmds.parent(created, currentParent[0])
-                 print "parented to %s" % currentParent[0]
 
-        noGroupName = target.split("|")[-1] # get shortname
+        noGroupName = target.split("|")[-1]  # get shortname
         newname = cmds.rename(created, noGroupName)
