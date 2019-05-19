@@ -1,6 +1,7 @@
 #!/usr/bin/env python2.7
 
 """
+Works with Maya 2018
 Given a a complete edge loop or enclosure of edges,
 this script will select all faces within the edge perimeter
 
