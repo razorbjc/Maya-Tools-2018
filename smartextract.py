@@ -25,11 +25,21 @@ def smartextract():
 	print "selection check:", sel
 	# object selected: run separate
 	if cmds.nodeType(sel[0]) == 'transform':
-		parents = cmds.listRelatives(parent=True, fullPath=True)
+
 		for obj in sel:
+			parents = cmds.listRelatives(obj, parent=True, fullPath=True)
+			result_list = []
+			name = obj
 			separate_obj = cmds.polySeparate(obj, ch=False)
-			rebuild(separate_obj, "separate", parents)
+			first = [separate_obj.pop(0)]
+			result_list.extend(rebuild(separate_obj, "separate", parents))
+			main_obj = rebuild(first, name, parents, primary=True)[0]
 			cmds.delete(obj)
+			main_obj = cmds.rename(main_obj, name)
+			print "adding:", main_obj
+			result_list.append(main_obj)
+
+		cmds.select(result_list)
 		return True
 
 	if cmds.nodeType(sel[0]) != 'mesh':
@@ -108,6 +118,7 @@ def smartduplicate():
 def rebuild(array=None, name=None, group=None, primary=False, freeze=True, pivot=None):
 	finalarray = []
 	count = 1001
+	print "first gets array:", array
 	for i in array:
 		newname = cmds.parent(i, group) if group else cmds.parent(i, world=True)
 		if freeze:
