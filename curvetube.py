@@ -1,9 +1,10 @@
 #!/usr/bin/env python2.7
 
 """
+Works with Maya 2018
 If given a curve, will produce tube geometry with spans at the curve's CVs
 If given tube geometry, will create a curve with CVs at the center of the edge rings
-
+May 2019
 __author__: James Chan
 """
 
@@ -76,6 +77,7 @@ def curve_to_tube(sel_curve):  # original with nurb circle extrusion
 
 
 def tube_to_curve(tube):
+    # select one border edge, then store edge rings in 'spans'
     border_edge = get_border_edges(tube)
     cmds.polySelect(tube, edgeBorder=get_comp_int(border_edge[0]), ass=True)
     edge_sel = cmds.ls(sl=True, fl=True)
@@ -85,6 +87,9 @@ def tube_to_curve(tube):
     cmds.ConvertSelectionToVertices()
     coord_array = []
     black_list = []
+
+    # traverse through spans by growing selection then removing vertices in the blacklist
+    # then select edgeloops and store in coord_array
     for j in range(length):
         new_selection = cmds.ls(sl=True, fl=True)
         new_ring = [i for i in new_selection if i not in black_list]
@@ -144,3 +149,11 @@ def uv_tube(obj):
     cmds.polyUVRectangle(vert_loop[0], vert_loop[-1])
     cmds.polyFlipUV(obj, pivotU=0.5)
     return obj
+
+
+
+
+
+
+
+
