@@ -1,8 +1,9 @@
 #!/usr/bin/env python2.7
 
 """
+Works with Maya 2018
 Toggles imageplane visibility of current camera
-
+May 2019
 __author__: James Chan
 """
 
