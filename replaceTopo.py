@@ -15,7 +15,7 @@ import maya.mel as mel
 import math
 
 
-class replacetopo(object):
+class replaceTopo(object):
     windowName = "replaceTopo"
 
     def __init__(self):
