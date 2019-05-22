@@ -12,7 +12,7 @@ import maya.cmds as cmds
 import maya.mel as mel
 
 
-def curvetube():
+def curveTube():
     sel = cmds.ls(sl=True, o=True)
     result_list = []
     result = None
@@ -149,11 +149,3 @@ def uv_tube(obj):
     cmds.polyUVRectangle(vert_loop[0], vert_loop[-1])
     cmds.polyFlipUV(obj, pivotU=0.5)
     return obj
-
-
-
-
-
-
-
-
