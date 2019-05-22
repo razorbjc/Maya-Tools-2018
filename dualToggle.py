@@ -20,8 +20,8 @@ def set_model_panel():
     cmds.modelEditor(panel, e=True, sel=False)
 
 
-def dualtoggle_on():
-    # setModelPanel()
+def dualToggle_on():
+    # set_model_panel()
     selection = cmds.ls(sl=True)
     first_obj , second_obj = selection
     firstVis = '%s.visibility' % first_obj
@@ -45,9 +45,12 @@ def dualtoggle_on():
         cmds.setAttr(secondVis, 0)
 
 
-def dualtoggle_off():
+def dualToggle_off():
     # will turn on all visibilities and turn selection highlighting back on
-    set_model_panel()
+    panel = cmds.getPanel(wf=True)
+    if "modelPanel" not in panel:
+        panel = "modelPanel4"
+    cmds.modelEditor(panel, e=True, sel=True)
     selections = cmds.ls(sl=True)
     for selection in selections:
         cmds.setAttr("%s.visibility" % selection, 1)
