@@ -13,7 +13,7 @@ import maya.OpenMaya as OpenMaya
 import maya.OpenMayaUI as OpenMayaUI
 
 
-def camcliptoggle():
+def camClipToggle():
     view = OpenMayaUI.M3dView.active3dView()
     cam = OpenMaya.MDagPath()
     view.getCamera(cam)
