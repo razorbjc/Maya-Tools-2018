@@ -17,10 +17,10 @@ __author__: James Chan
 
 import maya.cmds as cmds
 import maya.mel as mel
-import jc_facecut
+import faceCut
 
 
-def smartextract():
+def smartExtract():
 	sel = cmds.ls(sl=True)
 	print "selection check:", sel
 	# object selected: run separate
@@ -72,7 +72,7 @@ def smartextract():
 	return True
 
 
-def smartduplicate():
+def smartDuplicate():
 	sel = cmds.ls(sl=True)
 
 	# object selected: run separate
@@ -152,6 +152,6 @@ def tofaces(sel):
 	if cmds.filterExpand(sel[0], selectionMask=31):
 		cmds.ConvertSelectionToContainedFaces()
 	if cmds.filterExpand(sel[0], selectionMask=32):
-		jc_facecut.facecut()
+		faceCut.faceCut()
 	cmds.ConvertSelectionToFaces()
 	return True
