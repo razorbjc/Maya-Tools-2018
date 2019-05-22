@@ -11,7 +11,7 @@ __author__: James Chan
 import maya.cmds as cmds
 
 
-def smartcombine():
+def smartCombine():
     selection = cmds.ls(sl=True, o=True)
     main = selection[0]  # main is reference for pivot, name, display layers, hierarchy
     parents = cmds.listRelatives(main, parent=True, fullPath=True)
