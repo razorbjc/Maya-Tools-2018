@@ -12,7 +12,7 @@ import maya.cmds as cmds
 import maya.mel as mel
 
 
-def facecut():
+def faceCut():
     edgesel = cmds.ls(sl=True, fl=True)
     objs = cmds.ls(sl=True, o=True)
 
