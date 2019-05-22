@@ -1,7 +1,6 @@
 '''
-Template class for docking a Qt widget to maya 2017+.
-Author: Lior ben horin
-12-1-2017
+for Maya 2018
+Custom tools by James
 '''
 import weakref
 import os
@@ -10,17 +9,17 @@ import maya.OpenMayaUI as omui
 import maya.mel as mel
 from shiboken2 import wrapInstance
 
-import jc_smartcombine
-import jc_uvui
-import jc_smartextract
-import jc_facecut
-import jc_unsmooth
-import jc_curvetube
-import jc_replacetopo
-import jc_remove_namespaces
-import jc_imageplanetoggle
-import jc_dualtoggle
-import jc_camcliptoggle
+import smartCombine
+import uvui
+import smartExtract
+import faceCut
+import unsmooth
+import curveTube
+import replaceTopo
+import removeNamespaces
+import imagePlaneToggle
+import dualToggle
+import camClipToggle
 
 from Qt import QtGui, QtWidgets, QtCore  # https://github.com/mottosso/Qt.py by Marcus Ottosson
 
@@ -97,66 +96,66 @@ class MyDockingUI(QtWidgets.QWidget):
 #######################################################################
         main_column = cmds.columnLayout(adjustableColumn=True)
         cmds.rowLayout(numberOfColumns=2, columnAlign1="center", parent=main_column)
-        cmds.shelfButton(i="uvui_icon.png", c="import jc_uvui\njc_uvui.uvui().launch()")
+        cmds.shelfButton(i="uvui_icon.png", c="import uvui\nuvui.uvui().launch()")
         cmds.button(label="UV UI", w=bw, h=bh, c=self.uvui)
         cmds.setParent('..')
 
         cmds.rowLayout(numberOfColumns=2, columnAlign1="center", parent=main_column)
-        cmds.shelfButton(i="facecut_icon.png", c="import jc_facecut\njc_facecut.facecut()")
+        cmds.shelfButton(i="facecut_icon.png", c="import faceCut\nfaceCut.faceCut()")
         cmds.button(label="FaceCut", w=bw, h=bh, c=self.facecut)
         cmds.setParent('..')
 
         cmds.rowLayout(numberOfColumns=2, columnAlign1="center", parent=main_column)
-        cmds.shelfButton(i="combine_icon.png", c="import jc_smartcombine\njc_smartcombine.smartcombine()")
+        cmds.shelfButton(i="combine_icon.png", c="import smartCombine\nsmartCombine.smartCombine()")
         cmds.button(label="Smart Combine", w=bw, h=bh, c=self.smartcombine)
         cmds.setParent('..')
 
         cmds.rowLayout(numberOfColumns=2, columnAlign1="center", parent=main_column)
-        cmds.shelfButton(i="duplicate_icon.png", c="import jc_smartextract\njc_smartextract.smartduplicate()")
+        cmds.shelfButton(i="duplicate_icon.png", c="import smartExtract\nsmartExtract.smartDuplicate()")
         cmds.button(label="Smart Duplicate", w=bw, h=bh, c=self.smartduplicate)
         cmds.setParent('..')
 
         cmds.rowLayout(numberOfColumns=2, columnAlign1="center", parent=main_column)
-        cmds.shelfButton(i="extract_icon.png", c="import jc_smartextract\njc_smartextract.smartextract()")
+        cmds.shelfButton(i="extract_icon.png", c="import smartExtract\nsmartExtract.smartExtract()")
         cmds.button(label="Smart Extract", w=bw, h=bh, c=self.smartextract)
         cmds.setParent('..')
 
         cmds.rowLayout(numberOfColumns=2, columnAlign1="center", parent=main_column)
-        cmds.shelfButton(i="curvetube_icon.png", c="import jc_curvetube\njc_curvetube.curvetube()")
+        cmds.shelfButton(i="curvetube_icon.png", c="import curveTube\ncurveTube.curveTube()")
         cmds.button(label="CurveTube", w=bw, h=bh, c=self.curvetube)
         cmds.setParent('..')
 
         cmds.rowLayout(numberOfColumns=2, columnAlign1="center", parent=main_column)
-        cmds.shelfButton(i="unsmooth_icon.png", c="import jc_unsmooth\njc_unsmooth.unsmooth()")
+        cmds.shelfButton(i="unsmooth_icon.png", c="import unsmooth\nunsmooth.unsmooth()")
         cmds.button(label="Unsmooth", w=bw, h=bh, c=self.unsmooth)
         cmds.setParent('..')
 
         cmds.rowLayout(numberOfColumns=2, columnAlign1="center", parent=main_column)
-        cmds.shelfButton(i="replace_icon.png", c="import jc_replacetopo\njc_replacetopo.replacetopo().launch()")
+        cmds.shelfButton(i="replace_icon.png", c="import replaceTopo\nreplaceTopo.replaceTopo().launch()")
         cmds.button(label="Replace Topology", w=bw, h=bh, c=self.replacetopo)
         cmds.setParent('..')
 
         cmds.rowLayout(numberOfColumns=2, columnAlign1="center", parent=main_column)
         cmds.shelfButton(i="nameSpace_icon.png",
-                         c="import jc_remove_namespaces\njc_remove_namespaces.remove_namespaces()")
+                         c="import removeNamespaces\nremoveNamespaces.removeNamespaces()")
         cmds.button(label="Remove Namespaces", w=bw, h=bh, c=self.remove_namespaces)
         cmds.setParent('..')
 
         cmds.rowLayout(numberOfColumns=2, columnAlign1="center", parent=main_column)
         cmds.shelfButton(i="dualTog_icon.png", c=self.dualtoggle,
-                         doubleClickCommand="import jc_dualtoggle\njc_dualtoggle.jc_dualtoggle_off()")
+                         doubleClickCommand="import dualToggle\ndualToggle.dualToggle_off()")
         cmds.button(label="Dual Toggle", w=bw, h=bh, c=self.dualtoggle)
         cmds.setParent('..')
 
         cmds.rowLayout(numberOfColumns=2, columnAlign1="center", parent=main_column)
         cmds.shelfButton(i="camTog_icon.png",
-                         c="import jc_imageplanetoggle\njc_imageplanetoggle.imageplanetoggle()")
+                         c="import imagePlaneToggle\nimagePlaneToggle.imagePlaneToggle()")
         cmds.button(label="Imageplane Toggle", w=bw, h=bh, command=self.imageplanetoggle)
         cmds.setParent('..')
 
         cmds.rowLayout(numberOfColumns=2, columnAlign1="center", parent=main_column)
         cmds.shelfButton(i="clipToggle_icon.png",
-                         c="import jc_camcliptoggle\njc_camcliptoggle.camcliptoggle()")
+                         c="import camClipToggle\ncamClipToggle.camClipToggle()")
         cmds.button(label="Cam Clip Toggle", w=bw, h=bh, command=self.camcliptoggle)
         cmds.setParent('..')
         cmds.setParent('..')
@@ -192,40 +191,40 @@ class MyDockingUI(QtWidgets.QWidget):
         cmds.tabLayout(tabs, edit=True, tabLabel=((main_column, 'Custom'), (maya_column, 'Maya')))
 
     def smartcombine(self, *args):
-        jc_smartcombine.smartcombine()
+        smartCombine.smartCombine()
 
     def smartextract(self, *args):
-        jc_smartextract.smartextract()
+        smartExtract.smartExtract()
 
     def smartduplicate(self, *args):
-        jc_smartextract.smartduplicate()
+        smartExtract.smartDuplicate()
 
     def facecut(self, *args):
-        jc_facecut.facecut()
+        faceCut.faceCut()
 
     def uvui(self, *args):
-        jc_uvui.uvui().launch()
+        uvui.uvui().launch()
 
     def unsmooth(self, *args):
-        jc_unsmooth.unsmooth()
+        unsmooth.unsmooth()
 
     def curvetube(self, *args):
-        jc_curvetube.curvetube()
+        curveTube.curveTube()
 
     def replacetopo(self, *args):
-        jc_replacetopo.replacetopo().launch()
+        replaceTopo.replaceTopo().launch()
 
     def remove_namespaces(self, *args):
-        jc_remove_namespaces.remove_namespaces()
+        removeNamespaces.removeNamespaces()
 
     def imageplanetoggle(self, *args):
-        jc_imageplanetoggle.imageplanetoggle()
+        imagePlaneToggle.imagePlaneToggle()
 
     def dualtoggle(self, *args):
-        jc_dualtoggle.dualtoggle_on()
+        dualToggle.dualToggle_on()
 
     def camcliptoggle(self, *args):
-        jc_camcliptoggle.camcliptoggle()
+        camClipToggle.camClipToggle()
 
     def polyretopo(self, *args):
         cmds.polyRetopo()
