@@ -1,6 +1,7 @@
 #!/usr/bin/env python2.7
 
 """
+for Maya 2018
 Unsmooths geometry that has been smoothed. Works on quad-only geo that has not
 been edited since the smoothing. singular meshes only.
 
