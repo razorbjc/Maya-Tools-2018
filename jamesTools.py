@@ -142,7 +142,7 @@ class MyDockingUI(QtWidgets.QWidget):
         cmds.setParent('..')
 
         cmds.rowLayout(numberOfColumns=2, columnAlign1="center", parent=main_column)
-        cmds.shelfButton(i="dualTog_icon.png", c=self.dualtoggle,
+        cmds.shelfButton(i="dualTog_icon.png", c="import dualToggle\ndualToggle.dualToggle_on()",
                          doubleClickCommand="import dualToggle\ndualToggle.dualToggle_off()")
         cmds.button(label="Dual Toggle", w=bw, h=bh, c=self.dualtoggle)
         cmds.setParent('..')
