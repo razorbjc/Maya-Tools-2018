@@ -55,6 +55,7 @@ def curve_to_tube(sel_curve):  # original with nurb circle extrusion
     cmds.move(orig_loc[0], orig_loc[1], orig_loc[2], circle_var)
     cmds.move(cv_loc[0], cv_loc[1], cv_loc[2], locator_var)
     cmds.aimConstraint(locator_var, circle_var, o=(0, 0, 90))
+    cmds.nurbsToPolygonsPref(f=3,pt=1)
     final = cmds.extrude(circle_var,
                          sel_curve,
                          ch=True,
