@@ -1,36 +1,66 @@
-sel = cmds.ls(sl=True,fl=True)
-obj = cmds.ls(sl=True,o=True)
-name = cmds.listRelatives(obj,p=True)
-dup = cmds.duplicate(obj)[0]
-targetbb = cmds.xform(sel,q=True,bb=True)
-chipoff = cmds.polyChipOff(ch=1, kft=1, dup=0)
-separate = cmds.polySeparate(obj, rs=1, ch=1)
-separate.pop()
+#!/usr/bin/env python2.7
 
-print "chipoff:", chipoff
-print "separate:", separate
-print "bb:", targetbb
+"""
+for Maya 2018
+Selected faces or vertices will be ordered to have the first vertex IDs.
+Used for reordering character models so that the head consists of the first vertIDs
 
-for i in separate:
-    tempbb = cmds.xform(i,q=True,bb=True)
-    print "tempbb:",tempbb
-    if tempbb[0] == targetbb[0]:
-        print "head is", i
-        head = i
-    else:
-        print "body is", i
-        body = i
-print "head:", head
-print "body:", body 
-print "name:", name
-print "dup:",dup
+__author__: James Chan
+"""
 
-result = cmds.polyUnite(head, body, ch=True)[0]
-mergenode = cmds.polyMergeVertex(result, d=0.001, am=1, ch=True)
-print "result:", result
-print "final:", mergenode
+import maya.cmds as cmds
+import maya.mel as mel
+import math
 
-cmds.transferAttributes(dup, result, transferPositions=0, transferNormals=0, transferUVs=2, sourceUvSpace="map1", targetUvSpace="map1", sampleSpace=0, searchMethod=0)
-cmds.delete(dup)
-cmds.delete(result, ch=True)
-cmds.rename(result, name)
+
+def headCut():
+    # convert selection to vertices and collect name, transform, hierarchy, pivots
+    cmds.ConvertSelectionToContainedFaces()
+    sel = cmds.ls(sl=True, fl=True)
+    obj = cmds.ls(sl=True, o=True)
+    name = cmds.listRelatives(obj, p=True, fullPath=True)[0]
+    parents = cmds.listRelatives(name, parent=True, fullPath=True)
+    pivotinfo = cmds.xform(name, q=True, pivots=True, ws=True)[:3]
+
+    # dup original obj to transfer UVs later, get boundingbox for sel to identify head later
+    # run chipoff and separate. pop off separate node to leave list of remaining objs
+    dup = cmds.duplicate(obj, name='uv_ref')[0]
+    targetbb = cmds.xform(sel, q=True, bb=True)
+    cmds.polyChipOff(ch=1, kft=1, dup=0)
+    separate = cmds.polySeparate(obj, rs=1, ch=1)
+    separate.pop()
+
+    if len(separate) != 2:
+        cmds.delete(dup)
+        cmds.error("more than 2 objects")
+
+    # see if bounding matches original selection to identify the head
+    head = None
+    body = None
+    for i in separate:
+        tempbb = cmds.xform(i, q=True, bb=True)
+        if tempbb[0] == targetbb[0]:
+            head = i
+        else:
+            body = i
+    vertcount = cmds.polyEvaluate(head, v=True)
+
+    # merge head and body (head first to retain vert order)
+    result = cmds.polyUnite(head, body, ch=True)[0]
+    cmds.polyMergeVertex(result, d=0.001, am=1, ch=True)
+    cmds.select(result)
+    cmds.polyNormalPerVertex(ufn=True)
+
+    # transfer UVs/normals, delete duplicate, re-parent, reset pivot, rename, select first verts
+    cmds.transferAttributes(dup, result, transferPositions=1, transferNormals=1, transferUVs=2,
+                            sampleSpace=0, sourceUvSpace="map1", targetUvSpace="map1",
+                            searchMethod=3, flipUVs=0, colorBorders=1)
+    cmds.delete(result, ch=True)
+    cmds.delete(dup)
+    if parents:
+        result = cmds.parent(result, parents)
+    cmds.xform(result, pivots=pivotinfo, ws=True)
+    cmds.rename(result, name.split("|")[-1])
+    cmds.select(cmds.ls(sl=True, long=True)[0] + '.vtx[0:' + str(vertcount-1) + ']')
+    cmds.inViewMessage(amg='<hl>Vertices Reordered</hl> - Head Selected',
+                       pos='topCenter', fst=5000, fade=True)
