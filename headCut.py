@@ -22,10 +22,12 @@ def headCut():
     parents = cmds.listRelatives(name, parent=True, fullPath=True)
     pivotinfo = cmds.xform(name, q=True, pivots=True, ws=True)[:3]
 
-    # dup original obj to transfer UVs later, get boundingbox for sel to identify head later
+    # dup original obj to transfer UVs later, get boundingbox minx to identify head later
     # run chipoff and separate. pop off separate node to leave list of remaining objs
     dup = cmds.duplicate(obj, name='uv_ref')[0]
-    targetbb = cmds.xform(sel, q=True, bb=True)
+    target_minx = format(cmds.xform(sel, q=True, bb=True)[0],'.5f')
+    target_miny = format(cmds.xform(sel, q=True, bb=True)[1],'.5f')
+    print "target:", target_minx, target_miny
     cmds.polyChipOff(ch=1, kft=1, dup=0)
     separate = cmds.polySeparate(obj, rs=1, ch=1)
     separate.pop()
@@ -38,13 +40,14 @@ def headCut():
     head = None
     body = None
     for i in separate:
-        tempbb = cmds.xform(i, q=True, bb=True)
-        if tempbb[0] == targetbb[0]:
+        temp_minx = format(cmds.xform(i, q=True, bb=True)[0],'.5f')
+        temp_miny = format(cmds.xform(i, q=True, bb=True)[1],'.5f')
+        print "temp:", temp_minx, temp_miny
+        if temp_minx == target_minx and temp_miny == target_miny:
             head = i
         else:
             body = i
     vertcount = cmds.polyEvaluate(head, v=True)
-
     # merge head and body (head first to retain vert order)
     result = cmds.polyUnite(head, body, ch=True)[0]
     cmds.polyMergeVertex(result, d=0.001, am=1, ch=True)
