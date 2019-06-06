@@ -133,7 +133,7 @@ class replaceTopo(object):
         # Create wrap deformer
         cmds.select(self.newMesh)
         cmds.select(self.oldMesh, add=True)
-        self.wrapName = mel.eval('doWrapArgList "2" { "1","0","1" }')
+        self.wrapName = mel.eval('doWrapArgList "7" { "1","0","1", "2", "0", "1", "0", "0" }')
 
         for target in self.oldTargets:
             if target == self.oldMesh:
