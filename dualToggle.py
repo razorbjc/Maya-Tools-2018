@@ -2,8 +2,8 @@
 
 """
 Works with Maya 2018
-When given two selections, will alternate the visibilities between them
-will also turn off selection highlighting for better viewing.
+When given two selectioned objects, dualToggle will key their visbilities on different frames. 
+For easy comparison between two models. Will also turn off selection highlighting for easier viewing.
 
 __author__: James Chan
 """
