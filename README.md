@@ -7,7 +7,7 @@ Modeling Tools<br><br>
 <br>If given a curve, curveTube will produce tube geometry with spans at the curve's CVs. If given tube geometry, curveTube will instead create a curve with CVs at the center of each edge ring.
 
 <b>dualToggle.py</b>
-<br>When given two selectioned objects, dualToggle will key their visbilities on different frames. For easy comparison between two models. Will also turn off selection highlighting for easier viewing.
+<br>When given two selectioned objects, dualToggle will key their visibilities on different frames. For easy comparison between two models. Will also turn off selection highlighting for easier viewing.
 
 <b>faceCut.py</b>
 <br>Given a a complete edge loop or enclosure of edges, this script will select all faces within the edge perimeter.
