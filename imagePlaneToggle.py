@@ -2,7 +2,9 @@
 
 """
 Works with Maya 2018
-Toggles imageplane visibility of current camera
+Toggles imageplane visibility of current camera from 0% to 50% to 100%. 
+Meant to be keybinded to quickly change the alpha of an imageplane without 
+using the slider in the camera's attributes.
 May 2019
 __author__: James Chan
 """
