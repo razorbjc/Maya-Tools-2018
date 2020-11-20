@@ -21,10 +21,19 @@ def holeGrid():
     cmds.polySelectSp(loop=True)  # select edgeloop
     edge_outer = cmds.ls(sl=True, fl=True)
 
+    # find shader on connected face
+    cmds.select(edge_outer[0])
+    cmds.ConvertSelectionToFaces()
+    cmds.hyperShade(smn=True)
+    shader = cmds.ls(sl=True)[0]
+
     # create plane and combine with original geo
     new_plane = create_plane(edge_outer)
+    cmds.select(new_plane)
+    cmds.hyperShade(assign=shader)
     new_geo_name = cmds.polyUnite(obj, new_plane, n=obj_name)[0]
     cmds.delete(new_geo_name, ch=True)
+    cmds.isolateSelect(cmds.paneLayout('viewPanes', q=True, pane1=True), addSelected=True)
 
     # select last edge of combined geo, update names for the outer edge
     last_edge = (cmds.polyEvaluate(new_geo_name, e=True))-1
