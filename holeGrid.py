@@ -110,3 +110,5 @@ def create_plane(edge_sel):
     cmds.delete(fill_hole)
 
     return new_plane
+
+holeGrid()
