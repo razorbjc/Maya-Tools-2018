@@ -5,7 +5,7 @@ These are a collection of Maya Modeling Tools I have written over the years. To 
 <br>Increases the clipping plane range of all cameras in the scene to 10cm - 1,000,000cm. Clicking again will toggle all cameras back to default range. Good for working on environments without needing to manually edit clipping plane values.
 
 <b>curveTube.py</b>
-<br>If given a curve, curveTube will produce tube geometry with spans at the curve's CVs. If given tube geometry, curveTube will instead create a curve with CVs at the center of each edge ring.
+<br>If given a curve, the script will generate a tube with spans at the curve's CVs. If given tube geometry, it will instead create a curve with CVs at the center of each edge ring.
 
 <b>dualToggle.py</b>
 <br>When given two selectioned objects, dualToggle will hide one object and show the other. Then will switch their visibilities when run again. For quick, easy comparison between two models. Good for matching scans.
