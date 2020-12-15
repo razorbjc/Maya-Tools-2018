@@ -45,3 +45,6 @@
 
 <b>uvui.py</b>
 <br>A custom UV toolset that allows access to the most commonly used tools. Includes better support for flipping UVs within the UDIM.
+
+<b>versionUp.py</b>
+Shorcut for incrementally saving current scene while maintaining the number padding/convention.
