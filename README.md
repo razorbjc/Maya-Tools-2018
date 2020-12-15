@@ -20,9 +20,6 @@
 <b>imagePlaneToggle.py</b>
 <br>Toggles imageplane visibility of current camera from 0% to 50% to 100%. Meant to be keybinded to quickly change the alpha of an imageplane without using the slider in the camera's attributes.
 
-<b>jamesTools.py</b>
-<br>A UI that contains buttons for all the rest the scripts.
-
 <b>removeNamespaces.py</b>
 <br>Removes all namespaces. May need to be run multiple times for stacked namespaces
 
