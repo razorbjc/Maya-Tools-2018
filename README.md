@@ -44,7 +44,7 @@
 <br>Also contains <b>smartDuplicate</b>, which can duplicate faces without adding history/garbage to the scene.
 
 <b>unsmooth.py</b>
-<br>Unsmooths geometry that has been smoothed, even without history. Works on quad-only geo that has not been edited since the smoothing. singular meshes only.
+<br>Unsmooths geometry that has been smoothed, even without history. Kind of like zBrush's 'Reconstruct SubDivision Levels". Works on quad-only geo that has not been edited since the smoothing. For singular meshes only and can be very slow for meshes with 10k+ polygons
 
 <b>uvui.py</b>
 <br>A custom UV toolset that allows access to the most commonly used tools. Includes better support for flipping UVs within the UDIM.
