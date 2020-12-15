@@ -240,3 +240,5 @@ class replaceTopo(object):
 
         noGroupName = target.split("|")[-1]  # get shortname
         newname = cmds.rename(created, noGroupName)
+
+replaceTopo().launch()        
