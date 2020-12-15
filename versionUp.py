@@ -3,7 +3,6 @@
 """
 Works with Maya 2018
 Will incrementally save current file while maintaining the number padding.
-Only works if current file has a name with numbers at the end.
 Created Oct 2020
 
 __author__: James Chan
