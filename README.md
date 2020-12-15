@@ -33,12 +33,11 @@
 <br>Will combine objects while retaining the pivot, name, hierarchy, and display layer of the last selected object. History is deleted.
 
 <b>smartExtract.py</b>
-<br>meant to be a cleaner alternative for Maya's extract
-<br>if objects with separate meshes are selected, smartExtract will separate them.
-<br>if given a face selection, smartExtract will extract faces but retain the name and pivot of the base geometry. The extracted pieces will be named/numbered and pivots centered.
+<br>Meant to be a cleaner alternative for Maya's Extract. If objects with separate meshes are selected, smartExtract will separate them. If given a face selection, smartExtract will extract faces but retain the name and pivot of the base geometry. The extracted pieces will be named/numbered and pivots centered.
 <br>if given an completed edge loop, smartExtract will run faceCut and then extract faces.
-<br>if given vertices, the vertex selection will be converted to a face select and extract.
-<br>Also contains <b>smartDuplicate</b>, which can duplicate faces without adding history/garbage to the scene.
+
+<b>smartDuplicate.py</b>
+<br>meant to be a cleaner alternative for Maya's duplicate. Duplicated faces will have centered pivots and clean names. if given an completed edge loop, smartDuplicate will run faceCut and then duplicate faces.
 
 <b>unsmooth.py</b>
 <br>Unsmooths geometry that has been smoothed, even without history. Kind of like zBrush's 'Reconstruct SubDivision Levels". Works on quad-only geo that has not been edited since the smoothing. For singular meshes only and can be very slow for meshes with 10k+ polygons. Maintains UVs.
