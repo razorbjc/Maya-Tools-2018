@@ -15,7 +15,7 @@
 <br>Selected faces or vertices will be ordered to have the first vertex IDs. Used for reordering character models so that the head consists of the first vertIDs.
 
 <b>holeGrid.py</b>
-<br>When an edge or edgloop of a hole is selected, this script will fill the hole with a grid. After the script is run, the grid verts are selected for further averaging. The 'offset' attribute in the channel box can be adjusted to fine-tune the rotation.
+<br>This script will fill a selected hole with grid geo. After the script is run, the grid verts are selected for further averaging. The 'offset' attribute in the channel box can be adjusted to fine-tune the rotation.
 
 <b>imagePlaneToggle.py</b>
 <br>Toggles imageplane visibility of current camera from 0% to 50% to 100%. Meant to be keybinded to quickly change the alpha of an imageplane without using the slider in the camera's attributes.
