@@ -40,3 +40,5 @@ def camClipToggle():
                                pos='topCenter', fade=True )
             cmds.setAttr(str(i+".nearClipPlane"), .1)
             cmds.setAttr(str(i+".farClipPlane"), 10000)
+            
+camClipToggle()
