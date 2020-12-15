@@ -54,3 +54,5 @@ def dualToggle_off():
     selections = cmds.ls(sl=True)
     for selection in selections:
         cmds.setAttr("%s.visibility" % selection, 1)
+
+dualToggle_on()
