@@ -34,10 +34,10 @@
 
 <b>smartExtract.py</b>
 <br>Meant to be a cleaner alternative for Maya's Extract. If objects with separate meshes are selected, smartExtract will separate them. If given a face selection, smartExtract will extract faces but retain the name and pivot of the base geometry. The extracted pieces will be named/numbered and pivots centered.
-<br>if given an completed edge loop, smartExtract will run faceCut and then extract faces.
+<br>if given a completed edge loop, smartExtract will run faceCut and then extract faces.
 
 <b>smartDuplicate.py</b>
-<br>meant to be a cleaner alternative for Maya's duplicate. Duplicated faces will have centered pivots and clean names. if given an completed edge loop, smartDuplicate will run faceCut and then duplicate faces.
+<br>Meant to be a cleaner alternative for Maya's Duplicate. Duplicated faces will have centered pivots and clean names. if given a completed edge loop, smartDuplicate will run faceCut and then duplicate faces.
 
 <b>unsmooth.py</b>
 <br>Unsmooths geometry that has been smoothed, even without history. Kind of like zBrush's 'Reconstruct SubDivision Levels". Works on quad-only geo that has not been edited since the smoothing. For singular meshes only and can be very slow for meshes with 10k+ polygons. Maintains UVs.
