@@ -150,3 +150,5 @@ def uv_tube(obj):
     cmds.polyUVRectangle(vert_loop[0], vert_loop[-1])
     cmds.polyFlipUV(obj, pivotU=0.5)
     return obj
+
+curveTube()
