@@ -66,3 +66,5 @@ def headCut():
     cmds.select(cmds.ls(sl=True, long=True)[0] + '.vtx[0:' + str(vertcount-1) + ']')
     cmds.inViewMessage(amg='<hl>Vertices Reordered</hl> - Head Selected',
                        pos='topCenter', fst=5000, fade=True)
+
+headCut()    
