@@ -31,3 +31,5 @@ def imagePlaneToggle():
     else:
             for i in imgplanes:
                 cmds.setAttr(str(i)+".alphaGain", 0)
+                
+imagePlaneToggle()
