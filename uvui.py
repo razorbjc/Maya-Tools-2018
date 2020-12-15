@@ -378,3 +378,5 @@ class uvui(object):
             cmds.polyMapSew(i)
         cmds.select(selection)
         mel.eval('BakeNonDefHistory;')
+
+uvui().launch()        
