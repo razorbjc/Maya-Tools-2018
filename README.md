@@ -26,8 +26,8 @@ These are a collection of Maya Modeling Tools I have written over the years. To 
 <br>Removes all namespaces. May need to be run multiple times for stacked namespaces
 
 <b>replaceTopo.py</b>
-<br>Replaces all objects of a certain topology with new geo(even if the object transforms have been lost/frozen). Good for updating low-res trees, rocks, or woodplanks with high-res versions in environments.
-<br> 1. Define an 'Old Mesh' which will be an example of object/topology you want to replace.
+<br>Replaces all objects of a certain topology with new geo(even if the object transforms have been lost/frozen). Good for updating many low-res trees, rocks, or woodplanks with high-res versions in environments.
+<br> 1. Define an 'Old Mesh' which will be an example of the object/topology you want to replace.
 <br> 2. Define a "New Mesh, which is what you want to replace the old meshes with. Should overlap in space with the 'Old Mesh"
 <br> 3. Define which target objects you want to replace, then hit 'Run'
 
