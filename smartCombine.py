@@ -33,3 +33,5 @@ def smartCombine():
         cmds.delete(main)
     cmds.rename(newmesh, main.split("|")[-1])
     return
+
+smartCombine()
