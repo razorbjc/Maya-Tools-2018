@@ -45,3 +45,5 @@ def versionUp():
     final_save_name = word_string + padded_number + scene_type
     cmds.file(rename=final_save_name)
     cmds.file(save=True)
+
+versionUp()    
