@@ -6,7 +6,7 @@
 <br>If given a curve, curveTube will produce tube geometry with spans at the curve's CVs. If given tube geometry, curveTube will instead create a curve with CVs at the center of each edge ring.
 
 <b>dualToggle.py</b>
-<br>When given two selectioned objects, dualToggle will key their visibilities on different frames. For easy comparison between two models. Will also turn off selection highlighting for easier viewing.
+<br>When given two selectioned objects, dualToggle will key their visibilities onto different frames. For easy comparison between two models. Will also turn off selection highlighting for easier viewing.
 
 <b>faceCut.py</b>
 <br>Given a a complete edge loop or enclosure of edges, this script will select all faces within the edge perimeter.
@@ -27,8 +27,10 @@
 <br>Removes all namespaces. May need to be run multiple times for stacked namespaces
 
 <b>replaceTopo.py</b>
-<br>A UI that allows the user to replace all instances of a geometry in a scene with newer/higher-res geo (even if the old geometry's tranforms have been lost/frozen). An 'Old Mesh' is used as a wrap deformer on the 'New Mesh'. Then that 'Old Mesh' blendshapes
-into all the 'Old Targets', leaving a duplicate of 'New Mesh' in that position. Users can choose to put the duplicates into a new group, or replace the existing old meshes.
+<br>Can swap all objects of a certain topology with new geo(even if the object transforms have been lost/frozen). Good for updating low-res/proxy trees, rocks, or woodplanks with high-res models for environments.
+<br> 1. Define an 'Old Mesh' which will be an example of object/topology you want to replace.
+<br> 2. Define a "New Mesh, which is what you want to replace the old meshes with. Should overlap in space with the 'Old Mesh"
+<br> 3. Define which target objects you want to replace, then hit 'Run'
 
 <b>smartCombine.py</b>
 <br>Will combine objects while retaining the pivot, name, hierarchy, and display layer of the last selected object. History is deleted.
