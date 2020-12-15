@@ -9,7 +9,7 @@
 <br>When given two selectioned objects, dualToggle will hide one object and show the other. Then will switch their visibilities when run again. For quick, easy comparison between two models.
 
 <b>faceCut.py</b>
-<br>Given a a complete edge loop or enclosure of edges, this script will select all faces within the edge perimeter.
+<br>Given a complete edge loop or enclosure of edges, this script will select all faces within the edge perimeter.
 
 <b>headCut.py</b>
 <br>Selected faces or vertices will be ordered to have the first vertex IDs. Used for reordering character models so that the head consists of the first vertIDs.
@@ -24,7 +24,7 @@
 <br>Removes all namespaces. May need to be run multiple times for stacked namespaces
 
 <b>replaceTopo.py</b>
-<br>Replaces all objects of a certain topology with new geo(even if the object transforms have been lost/frozen). Good for updating low-res/proxy trees, rocks, or woodplanks with high-res models for environments.
+<br>Replaces all objects of a certain topology with new geo(even if the object transforms have been lost/frozen). Good for updating low-res trees, rocks, or woodplanks with high-res versions in environments.
 <br> 1. Define an 'Old Mesh' which will be an example of object/topology you want to replace.
 <br> 2. Define a "New Mesh, which is what you want to replace the old meshes with. Should overlap in space with the 'Old Mesh"
 <br> 3. Define which target objects you want to replace, then hit 'Run'
