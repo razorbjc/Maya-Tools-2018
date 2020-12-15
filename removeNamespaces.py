@@ -18,3 +18,5 @@ def removeNamespaces():
         namespaces_all.remove("shared")
     for i in namespaces_all:
         cmds.namespace(removeNamespace=i, mergeNamespaceWithRoot=True)
+
+removeNamespaces()        
