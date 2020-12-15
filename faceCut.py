@@ -42,3 +42,5 @@ def faceCut():
     cmds.ConvertSelectionToEdges()
     cmds.ConvertSelectionToContainedFaces()
     mel.eval('BakeNonDefHistory;')
+   
+faceCut()
