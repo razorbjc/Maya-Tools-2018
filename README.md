@@ -1,4 +1,6 @@
 # Maya Tools 2018
+These are a collection of Maya Modeling Tools I have written over the years. To use, just copy and paste into the script editor (must be a Python Tab) and execute (highlight all and hit 'Alt+Enter'). Easy!
+
 <b>camClipToggle.py</b>
 <br>Increases the clipping plane range of all cameras in the scene to 10cm - 1,000,000cm. Clicking again will toggle all cameras back to default range. Good for working on environments without needing to manually edit clipping plane values.
 
