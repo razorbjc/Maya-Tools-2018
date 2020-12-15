@@ -51,3 +51,5 @@ def unsmooth_main(obj):
     cmds.delete(low, ch=True)
     cmds.delete(high)
     return low
+
+unsmooth()
