@@ -1,4 +1,5 @@
 # Maya Tools 2018
+<b>INSTALLATION</b>
 These are a collection of Maya Modeling Tools I have written over the years. To use, just copy and paste all the text in a script into the script editor (Python Tab) and execute (highlight all and hit 'Alt+Enter'). Easy!
 
 <b>camClipToggle.py</b>
