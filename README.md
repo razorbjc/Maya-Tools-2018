@@ -1,5 +1,5 @@
 # Maya Tools 2018
-<b>INSTALLATION</b>
+<b>HOW TO USE</b>
 <br>These are a collection of Maya Modeling Tools I have written over the years. To use a script, just copy and paste all the text into Maya's script editor (Python Tab). Then execute by hightlighting all and pressing 'Alt+Enter'. Or you could make a shelf button by highlighting all, then middle mouse dragging to the shelf. Easy!
 <br><br><br>
 <b>camClipToggle.py</b>
