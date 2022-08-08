@@ -23,6 +23,9 @@
 <b>imagePlaneToggle.py</b>
 <br>Toggles imageplane visibility of current camera from 0% to 50% to 100%. Meant to be keybinded to quickly change the alpha of an imageplane without using the slider in the camera's attributes.
 
+<b>polyset.py</b>
+<br>This script will sort your selected objects into selection sets based on their polycount. Good for organizing messy environments.
+
 <b>removeNamespaces.py</b>
 <br>Removes all namespaces. May need to be run multiple times for stacked namespaces
 
